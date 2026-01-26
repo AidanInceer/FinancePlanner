@@ -1,0 +1,439 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Student Loan Payoff Calculator API",
+    "version": "1.0.0",
+    "description": "API for calculating optimal student loan payoff strategy with investment comparison",
+    "contact": {
+      "name": "FinancePlanner Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://financeplanner.railway.app",
+      "description": "Production server (Railway)"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Render calculator page",
+        "description": "Displays single-page calculator with Bootstrap form and Chart.js graph",
+        "operationId": "renderCalculatorPage",
+        "responses": {
+          "200": {
+            "description": "Calculator HTML page",
+            "content": {
+              "text/html": {
+                "example": "<!DOCTYPE html><html>...</html>"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calculate": {
+      "post": {
+        "summary": "Calculate loan payoff scenarios",
+        "description": "Accepts user financial data and returns three scenarios (optimistic, pessimistic, realistic) with payoff recommendation",
+        "operationId": "calculatePayoffScenarios",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatorInput"
+              },
+              "examples": {
+                "typical_user": {
+                  "summary": "Typical UK graduate scenario",
+                  "value": {
+                    "age": 25,
+                    "graduation_year": 2023,
+                    "loan_duration_years": 35,
+                    "investment_amount": 50000,
+                    "investment_growth_high": 8.0,
+                    "investment_growth_low": 4.0,
+                    "pre_tax_income": 45000,
+                    "loan_repayment_annual": 2400,
+                    "loan_interest_current": 5.5,
+                    "loan_interest_high": 7.0,
+                    "loan_interest_low": 3.0
+                  }
+                },
+                "high_earner": {
+                  "summary": "High earner with large investments",
+                  "value": {
+                    "age": 30,
+                    "graduation_year": 2018,
+                    "loan_duration_years": 35,
+                    "investment_amount": 150000,
+                    "investment_growth_high": 10.0,
+                    "investment_growth_low": 5.0,
+                    "pre_tax_income": 80000,
+                    "loan_repayment_annual": 5000,
+                    "loan_interest_current": 6.0,
+                    "loan_interest_high": 8.0,
+                    "loan_interest_low": 4.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "example": {
+                  "errors": [
+                    "Investment growth low (10%) cannot exceed high (5%)",
+                    "Loan interest current (8%) must be between low (3%) and high (7%)"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error during calculation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "description": "Returns service health status for monitoring",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Service healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CalculatorInput": {
+        "type": "object",
+        "required": [
+          "age",
+          "graduation_year",
+          "loan_duration_years",
+          "investment_amount",
+          "investment_growth_high",
+          "investment_growth_low",
+          "pre_tax_income",
+          "loan_repayment_annual",
+          "loan_interest_current",
+          "loan_interest_high",
+          "loan_interest_low"
+        ],
+        "properties": {
+          "age": {
+            "type": "integer",
+            "minimum": 18,
+            "maximum": 100,
+            "description": "User's current age",
+            "example": 25
+          },
+          "graduation_year": {
+            "type": "integer",
+            "minimum": 1980,
+            "maximum": 2040,
+            "description": "Year user graduated with student loan",
+            "example": 2023
+          },
+          "loan_duration_years": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "description": "Loan lifetime in years (typically 35 for UK Plan 2)",
+            "example": 35
+          },
+          "investment_amount": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "description": "Current investment portfolio value in GBP",
+            "example": 50000
+          },
+          "investment_growth_high": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Optimistic annual investment return rate (%)",
+            "example": 8.0
+          },
+          "investment_growth_low": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Pessimistic annual investment return rate (%)",
+            "example": 4.0
+          },
+          "pre_tax_income": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "description": "Annual income before tax in GBP",
+            "example": 45000
+          },
+          "loan_repayment_annual": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "description": "Current annual loan repayment in GBP",
+            "example": 2400
+          },
+          "loan_interest_current": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Current loan interest rate (%)",
+            "example": 5.5
+          },
+          "loan_interest_high": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Pessimistic loan interest rate (%)",
+            "example": 7.0
+          },
+          "loan_interest_low": {
+            "type": "number",
+            "format": "decimal",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "Optimistic loan interest rate (%)",
+            "example": 3.0
+          }
+        }
+      },
+      "CalculationResult": {
+        "type": "object",
+        "properties": {
+          "optimistic": {
+            "$ref": "#/components/schemas/ScenarioProjection"
+          },
+          "pessimistic": {
+            "$ref": "#/components/schemas/ScenarioProjection"
+          },
+          "realistic": {
+            "$ref": "#/components/schemas/ScenarioProjection"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/PayoffRecommendation"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of calculation",
+            "example": "2026-01-26T14:30:00Z"
+          }
+        }
+      },
+      "ScenarioProjection": {
+        "type": "object",
+        "properties": {
+          "scenario_type": {
+            "type": "string",
+            "enum": ["optimistic", "pessimistic", "realistic"],
+            "example": "realistic"
+          },
+          "investment_growth_rate": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Annual investment return rate used (%)",
+            "example": 6.0
+          },
+          "loan_interest_rate": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Annual loan interest rate used (%)",
+            "example": 5.5
+          },
+          "yearly_data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/YearlyProjection"
+            },
+            "description": "Year-by-year financial projection"
+          },
+          "total_loan_cost": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Total repayments + interest over loan lifetime (GBP)",
+            "example": 84000
+          },
+          "final_investment_value": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Investment portfolio value at loan end date (GBP)",
+            "example": 245000
+          },
+          "crossover_year": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Year when investment value exceeds total loan cost (null if never crosses)",
+            "example": 2035
+          },
+          "net_benefit": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Final investment value - total loan cost (positive = investing wins)",
+            "example": 161000
+          }
+        }
+      },
+      "YearlyProjection": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "description": "Calendar year",
+            "example": 2024
+          },
+          "loan_balance": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Outstanding loan balance (GBP)",
+            "example": 35000
+          },
+          "investment_value": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Investment portfolio value (GBP)",
+            "example": 55000
+          },
+          "annual_repayment": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Loan repayment this year (GBP)",
+            "example": 2400
+          },
+          "interest_accrued": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Loan interest accrued this year (GBP)",
+            "example": 1925
+          },
+          "investment_growth": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Investment growth this year (GBP)",
+            "example": 3300
+          }
+        }
+      },
+      "PayoffRecommendation": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": ["pay_off_early", "keep_investing", "neutral"],
+            "description": "Recommended action",
+            "example": "keep_investing"
+          },
+          "optimal_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Recommended early payoff date (null if keep investing)",
+            "example": null
+          },
+          "savings_amount": {
+            "type": "number",
+            "format": "decimal",
+            "description": "Financial benefit of recommended path (GBP)",
+            "example": 161000
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Confidence level based on scenario variance",
+            "example": "high"
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Plain-language explanation of recommendation",
+            "example": "Keep investing. Your investments are projected to grow significantly faster than your loan interest rate. By loan maturity in 2058, you'll have £161,000 more by investing rather than paying off early. This recommendation is highly confident as all scenarios agree."
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of validation error messages"
+          }
+        }
+      },
+      "ServerError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Internal server error during calculation"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed error information (dev mode only)"
+          }
+        }
+      }
+    }
+  }
+}

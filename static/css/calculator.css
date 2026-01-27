@@ -1,0 +1,126 @@
+/* Student Loan Payoff Calculator Styles */
+
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Graph container */
+#payoff-graph-container {
+    position: relative;
+    height: 400px;
+    margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+    #payoff-graph-container {
+        height: 300px;
+    }
+}
+
+/* Mobile responsiveness for 320px minimum width */
+@media (max-width: 576px) {
+    body {
+        font-size: 0.9rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+
+    #payoff-graph-container {
+        height: 250px;
+        margin: 1rem 0;
+    }
+}
+
+@media (max-width: 360px) {
+    #payoff-graph-container {
+        height: 220px;
+    }
+
+    .form-control {
+        font-size: 0.875rem;
+    }
+}
+
+
+/* Recommendation card */
+.recommendation-card {
+    border-left: 4px solid var(--success-color);
+}
+
+.recommendation-card.warning {
+    border-left-color: var(--warning-color);
+}
+
+.recommendation-card.danger {
+    border-left-color: var(--danger-color);
+}
+
+/* Loading spinner */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}

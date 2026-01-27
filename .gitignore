@@ -21,7 +21,6 @@ uv.lock
 *.log
 db.sqlite3
 db.sqlite3-journal
-/static/
 /media/
 local_settings.py
 *.pyc

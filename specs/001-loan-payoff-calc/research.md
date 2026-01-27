@@ -1,7 +1,7 @@
 # Research: Student Loan Payoff Calculator
 
-**Phase**: 0 - Outline & Research  
-**Purpose**: Resolve all NEEDS CLARIFICATION items from Technical Context  
+**Phase**: 0 - Outline & Research
+**Purpose**: Resolve all NEEDS CLARIFICATION items from Technical Context
 **Date**: 2026-01-26
 
 ## Research Tasks

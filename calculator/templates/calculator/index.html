@@ -1,0 +1,268 @@
+{% extends "calculator/base.html" %}
+{% load static %}
+
+{% block title %}Student Loan Payoff Calculator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h1 class="card-title h3 mb-3">Student Loan Payoff Calculator</h1>
+                <p class="text-muted">
+                    Compare paying off your UK Plan 2 student loan early versus investing.
+                    Get a personalized recommendation based on your financial situation.
+                </p>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div id="loading-overlay" class="loading-overlay d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Calculating...</span>
+            </div>
+        </div>
+
+        <!-- Error message -->
+        <div id="error-message" class="alert alert-danger d-none" role="alert">
+            An error occurred during calculation.
+        </div>
+
+        <!-- Calculator Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">Your Financial Information</h2>
+            </div>
+            <div class="card-body">
+                <form id="calculator-form" novalidate aria-label="Student loan calculator form">
+                    {% csrf_token %}
+
+                    <!-- Personal Information -->
+                    <div class="mb-4" role="group" aria-labelledby="personal-info-heading">
+                        <h3 id="personal-info-heading" class="h6 mb-3 text-primary">Personal Information</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="age" class="form-label">Current Age</label>
+                                <input type="number" class="form-control" id="age" name="age"
+                                       min="18" max="100" required>
+                                <div class="invalid-feedback">
+                                    Age must be between 18 and 100
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="current_year" class="form-label">Current Year</label>
+                                <input type="number" class="form-control" id="current_year" name="current_year"
+                                       min="1980" max="2100" required>
+                                <small class="form-text text-muted">Year to start calculations from</small>
+                                <div class="invalid-feedback">
+                                    Enter a valid year
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="graduation_year" class="form-label">Graduation Year</label>
+                                <input type="number" class="form-control" id="graduation_year"
+                                       name="graduation_year" min="1980" max="2040" required>
+                                <div class="invalid-feedback">
+                                    Enter a valid graduation year
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="loan_duration_years" class="form-label">Loan Duration (years)</label>
+                                <input type="number" class="form-control" id="loan_duration_years"
+                                       name="loan_duration_years" min="1" max="50" value="35" required>
+                                <small class="form-text text-muted">UK Plan 2 loans are typically 35 years</small>
+                                <div class="invalid-feedback">
+                                    Duration must be between 1 and 50 years
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="loan_end_year" class="form-label">Loan End Year</label>
+                                <input type="text" class="form-control" id="loan_end_year"
+                                       name="loan_end_year" readonly>
+                                <small class="form-text text-muted">Calculated automatically</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Information -->
+                    <div class="mb-4">
+                        <h3 class="h6 mb-3 text-primary">Investment Details</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="investment_amount" class="form-label">Current Investment Amount (£)</label>
+                                <input type="number" class="form-control" id="investment_amount"
+                                       name="investment_amount" min="0" step="0.01" required>
+                                <div class="invalid-feedback">
+                                    Enter a valid investment amount
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="investment_growth_low" class="form-label">Pessimistic Return (%)</label>
+                                <input type="number" class="form-control" id="investment_growth_low"
+                                       name="investment_growth_low" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Return must be between 0% and 20%
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="investment_growth_average" class="form-label">Average Return (%)</label>
+                                <input type="number" class="form-control" id="investment_growth_average"
+                                       name="investment_growth_average" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Return must be between 0% and 20%
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="investment_growth_high" class="form-label">Optimistic Return (%)</label>
+                                <input type="number" class="form-control" id="investment_growth_high"
+                                       name="investment_growth_high" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Return must be between 0% and 20%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Income and Loan Information -->
+                    <div class="mb-4">
+                        <h3 class="h6 mb-3 text-primary">Income & Loan Details</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pre_tax_income" class="form-label">Annual Pre-Tax Income (£)</label>
+                                <input type="number" class="form-control" id="pre_tax_income"
+                                       name="pre_tax_income" min="0" step="0.01" required>
+                                <div class="invalid-feedback">
+                                    Enter a valid income amount
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="initial_loan_balance" class="form-label">Current Loan Balance (£)</label>
+                                <input type="number" class="form-control" id="initial_loan_balance"
+                                       name="initial_loan_balance" min="0" step="0.01" required>
+                                <div class="invalid-feedback">
+                                    Enter a valid loan balance
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_growth_pessimistic" class="form-label">Salary Growth - Pessimistic (%)</label>
+                                <input type="number" class="form-control" id="salary_growth_pessimistic"
+                                       name="salary_growth_pessimistic" min="0" max="20" step="0.1" value="2" required>
+                                <small class="form-text text-muted">Conservative annual salary increase</small>
+                                <div class="invalid-feedback">
+                                    Growth must be between 0% and 20%
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="salary_growth_optimistic" class="form-label">Salary Growth - Optimistic (%)</label>
+                                <input type="number" class="form-control" id="salary_growth_optimistic"
+                                       name="salary_growth_optimistic" min="0" max="20" step="0.1" value="5" required>
+                                <small class="form-text text-muted">Aggressive annual salary increase</small>
+                                <div class="invalid-feedback">
+                                    Growth must be between 0% and 20%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="loan_repayment_annual" class="form-label">Annual Repayment (£)</label>
+                                <input type="text" class="form-control" id="loan_repayment_annual"
+                                       name="loan_repayment_annual" readonly>
+                                <small class="form-text text-muted">Auto-calculated: 9% above £27,295</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="loan_interest_low" class="form-label">Optimistic Interest Rate (%)</label>
+                                <input type="number" class="form-control" id="loan_interest_low"
+                                       name="loan_interest_low" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Rate must be between 0% and 20%
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="loan_interest_current" class="form-label">Current Interest Rate (%)</label>
+                                <input type="number" class="form-control" id="loan_interest_current"
+                                       name="loan_interest_current" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Rate must be between 0% and 20%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="loan_interest_high" class="form-label">Pessimistic Interest Rate (%)</label>
+                                <input type="number" class="form-control" id="loan_interest_high"
+                                       name="loan_interest_high" min="0" max="20" step="0.1" required>
+                                <div class="invalid-feedback">
+                                    Rate must be between 0% and 20%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form validation feedback -->
+                    <div id="form-errors" class="alert alert-danger d-none" role="alert"></div>
+
+                    <!-- Submit button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Calculate Optimal Strategy
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results section (hidden until calculation) -->
+        <div id="results-section" class="d-none">
+            <!-- Recommendation Card -->
+            <div id="recommendation-card" class="card shadow-sm mb-4 recommendation-card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Recommendation</h2>
+                    <div id="recommendation-content"></div>
+                </div>
+            </div>
+
+            <!-- Graph -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Payoff Scenarios Over Time</h2>
+                </div>
+                <div class="card-body">
+                    <div id="payoff-graph-container">
+                        <canvas id="payoff-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Calculate loan end year dynamically
+document.addEventListener('DOMContentLoaded', function() {
+    const graduationInput = document.getElementById('graduation_year');
+    const durationInput = document.getElementById('loan_duration_years');
+    const loanEndInput = document.getElementById('loan_end_year');
+
+    function updateLoanEndYear() {
+        const graduation = parseInt(graduationInput.value) || 0;
+        const duration = parseInt(durationInput.value) || 0;
+        if (graduation && duration) {
+            loanEndInput.value = graduation + duration;
+        } else {
+            loanEndInput.value = '';
+        }
+    }
+
+    graduationInput.addEventListener('input', updateLoanEndYear);
+    durationInput.addEventListener('input', updateLoanEndYear);
+});
+</script>
+{% endblock %}

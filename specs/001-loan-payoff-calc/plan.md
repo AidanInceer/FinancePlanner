@@ -11,18 +11,18 @@ Single-page student loan payoff calculator that helps users determine optimal re
 
 ## Technical Context
 
-**Language/Version**: Python 3.13  
-**Primary Dependencies**: Django 5.1, Bootstrap 5.3, Chart.js 4.4.1  
-**Storage**: SQLite (development and production)  
-**Testing**: pytest with Django plugin (pytest-django)  
-**Linting/Formatting**: Ruff  
-**Target Platform**: Web browser (desktop and mobile), Django development server (local), Railway (production deployment)  
-**Project Type**: web (single-page Django application with Bootstrap frontend)  
-**Performance Goals**: Calculate 3 scenarios with 35-year projections in <2 seconds, render graph in <1 second  
-**Constraints**: Stateless (no user auth/persistence), responsive design (320px minimum width), <3 minute user journey from entry to recommendation  
-**Scale/Scope**: Single calculator page, ~4-5 input groups (time, personal finance, loan, hidden UK tax config), 3 calculation scenarios, 1 interactive graph  
-**Frontend Framework**: Bootstrap 5.3 for responsive layout and forms  
-**Charting**: Chart.js 4.4.1 (lightweight, native uncertainty bands, Bootstrap compatible)  
+**Language/Version**: Python 3.13
+**Primary Dependencies**: Django 5.1, Bootstrap 5.3, Chart.js 4.4.1
+**Storage**: SQLite (development and production)
+**Testing**: pytest with Django plugin (pytest-django)
+**Linting/Formatting**: Ruff
+**Target Platform**: Web browser (desktop and mobile), Django development server (local), Railway (production deployment)
+**Project Type**: web (single-page Django application with Bootstrap frontend)
+**Performance Goals**: Calculate 3 scenarios with 35-year projections in <2 seconds, render graph in <1 second
+**Constraints**: Stateless (no user auth/persistence), responsive design (320px minimum width), <3 minute user journey from entry to recommendation
+**Scale/Scope**: Single calculator page, ~4-5 input groups (time, personal finance, loan, hidden UK tax config), 3 calculation scenarios, 1 interactive graph
+**Frontend Framework**: Bootstrap 5.3 for responsive layout and forms
+**Charting**: Chart.js 4.4.1 (lightweight, native uncertainty bands, Bootstrap compatible)
 **UK Tax Data**: JSON configuration file at `data/uk_tax_thresholds.json` (version controlled, simple updates)
 
 **Research Decisions** (see [research.md](research.md) for details):
@@ -201,4 +201,4 @@ The generated tasks.md will break down implementation into:
 
 ---
 
-**Planning Phase Complete**: Ready for task generation and implementation 
+**Planning Phase Complete**: Ready for task generation and implementation

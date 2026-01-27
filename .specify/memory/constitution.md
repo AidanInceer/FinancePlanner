@@ -16,16 +16,16 @@ Sections added:
 - Frontend Testing Strategy (options and recommendations)
 
 Templates updated:
-- ✅ plan-template.md: 
+- ✅ plan-template.md:
   - Constitution Check section with SOLID, modularity, code-first, unit-test-only gates
   - Technical Context updated with Django-specific dependencies and Ruff linting
   - Project Structure updated with Django app options (single/multi-app/monolithic)
-  
-- ✅ spec-template.md: 
+
+- ✅ spec-template.md:
   - User Scenarios section clarified with unit-test-only approach
   - Added note that acceptance scenarios are validated via unit tests
-  
-- ✅ tasks-template.md: 
+
+- ✅ tasks-template.md:
   - Updated workflow to CODE-FIRST (implementation then tests)
   - All phases now show implementation tasks before unit test tasks
   - Removed contract/integration test references

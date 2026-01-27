@@ -1,7 +1,7 @@
 # Quickstart Guide: Student Loan Payoff Calculator
 
-**Purpose**: Get developers up and running with the project in under 10 minutes  
-**Prerequisites**: Python 3.13+, Git, text editor/IDE  
+**Purpose**: Get developers up and running with the project in under 10 minutes
+**Prerequisites**: Python 3.13+, Git, text editor/IDE
 **Date**: 2026-01-26
 
 ---
@@ -374,5 +374,5 @@ git commit -m "type(scope): message"  # Conventional commit format
 
 ---
 
-**Total Setup Time**: ~10 minutes  
+**Total Setup Time**: ~10 minutes
 **Status**: Ready for development ✅

@@ -1,8 +1,8 @@
 # Feature Specification: Student Loan Payoff Calculator
 
-**Feature Branch**: `001-loan-payoff-calc`  
-**Created**: 2026-01-26  
-**Status**: Draft  
+**Feature Branch**: `001-loan-payoff-calc`
+**Created**: 2026-01-26
+**Status**: Draft
 **Input**: User description: "Student loan payoff calculator - determine optimal payoff strategy with investment comparison and UK tax calculations"
 
 ## User Scenarios & Testing *(mandatory)*

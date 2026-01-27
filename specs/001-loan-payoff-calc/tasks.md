@@ -31,18 +31,18 @@ Project uses single Django project structure with calculator app at repository r
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create Django project structure per implementation plan in financeplanner/
-- [ ] T002 Initialize Django project with config/ directory and settings.py
-- [ ] T003 [P] Create calculator Django app in financeplanner/calculator/
-- [ ] T004 [P] Configure Ruff in pyproject.toml for linting and formatting
-- [ ] T005 [P] Create requirements.txt with Django 5.1, pytest-django dependencies
-- [ ] T006 [P] Setup .pre-commit-config.yaml with Ruff hooks
-- [ ] T007 [P] Create .env.example for environment variables template
-- [ ] T008 [P] Update .gitignore with Python, Django, and IDE patterns
-- [ ] T009 Create data/ directory for uk_tax_thresholds.json configuration
-- [ ] T010 [P] Create static/ directories for css/ and js/
-- [ ] T011 [P] Create tests/unit/calculator/ directory structure
-- [ ] T012 Configure URL routing in config/urls.py and calculator/urls.py
+- [X] T001 Create Django project structure per implementation plan in financeplanner/
+- [X] T002 Initialize Django project with config/ directory and settings.py
+- [X] T003 [P] Create calculator Django app in financeplanner/calculator/
+- [X] T004 [P] Configure Ruff in pyproject.toml for linting and formatting
+- [X] T005 [P] Create requirements.txt with Django 5.1, pytest-django dependencies
+- [X] T006 [P] Setup .pre-commit-config.yaml with Ruff hooks
+- [X] T007 [P] Create .env.example for environment variables template
+- [X] T008 [P] Update .gitignore with Python, Django, and IDE patterns
+- [X] T009 Create data/ directory for uk_tax_thresholds.json configuration
+- [X] T010 [P] Create static/ directories for css/ and js/
+- [X] T011 [P] Create tests/unit/calculator/ directory structure
+- [X] T012 Configure URL routing in config/urls.py and calculator/urls.py
 
 ---
 
@@ -52,15 +52,15 @@ Project uses single Django project structure with calculator app at repository r
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T013 Create UK tax thresholds JSON data in data/uk_tax_thresholds.json
-- [ ] T014 [P] Initialize Django database with migrations (manage.py migrate)
-- [ ] T015 [P] Create base template structure in calculator/templates/calculator/base.html
-- [ ] T016 [P] Setup Bootstrap 5.3 CDN links in base template
-- [ ] T017 [P] Setup Chart.js 4.4.1 CDN links in base template
-- [ ] T018 Create health check endpoint in calculator/views.py
-- [ ] T019 [P] Configure Django CORS and security settings in config/settings.py
-- [ ] T020 [P] Setup pytest configuration in pyproject.toml with Django plugin
-- [ ] T021 Create base calculator page route in calculator/urls.py
+- [X] T013 Create UK tax thresholds JSON data in data/uk_tax_thresholds.json
+- [X] T014 [P] Initialize Django database with migrations (manage.py migrate)
+- [X] T015 [P] Create base template structure in calculator/templates/calculator/base.html
+- [X] T016 [P] Setup Bootstrap 5.3 CDN links in base template
+- [X] T017 [P] Setup Chart.js 4.4.1 CDN links in base template
+- [X] T018 Create health check endpoint in calculator/views.py
+- [X] T019 [P] Configure Django CORS and security settings in config/settings.py
+- [X] T020 [P] Setup pytest configuration in pyproject.toml with Django plugin
+- [X] T021 Create base calculator page route in calculator/urls.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -74,20 +74,20 @@ Project uses single Django project structure with calculator app at repository r
 
 ### Implementation for User Story 1
 
-- [ ] T022 [P] [US1] Create CalculatorInput data class in calculator/models.py per data-model.md
-- [ ] T023 [P] [US1] Create input validation logic in calculator/validators.py (age, rates, ranges)
-- [ ] T024 [US1] Implement calculator form view in calculator/views.py (GET endpoint for /)
-- [ ] T025 [US1] Create Bootstrap form HTML in calculator/templates/calculator/index.html
-- [ ] T026 [US1] Add client-side form validation JavaScript in static/js/calculator.js
-- [ ] T027 [US1] Add form styling CSS in static/css/calculator.css
-- [ ] T028 [US1] Implement form field validation feedback (inline errors, checkmarks)
-- [ ] T029 [US1] Add computed field display (loan end date calculation) in frontend
+- [X] T022 [P] [US1] Create CalculatorInput data class in calculator/models.py per data-model.md
+- [X] T023 [P] [US1] Create input validation logic in calculator/validators.py (age, rates, ranges)
+- [X] T024 [US1] Implement calculator form view in calculator/views.py (GET endpoint for /)
+- [X] T025 [US1] Create Bootstrap form HTML in calculator/templates/calculator/index.html
+- [X] T026 [US1] Add client-side form validation JavaScript in static/js/calculator.js
+- [X] T027 [US1] Add form styling CSS in static/css/calculator.css
+- [X] T028 [US1] Implement form field validation feedback (inline errors, checkmarks)
+- [X] T029 [US1] Add computed field display (loan end date calculation) in frontend
 
 ### Unit Tests for User Story 1 (CODE-FIRST: Written AFTER implementation)
 
-- [ ] T030 [P] [US1] Unit tests for CalculatorInput data class in tests/unit/calculator/test_models.py
-- [ ] T031 [P] [US1] Unit tests for validators in tests/unit/calculator/test_validators.py (all validation rules)
-- [ ] T032 [P] [US1] Unit tests for calculator form view in tests/unit/calculator/test_views.py
+- [X] T030 [P] [US1] Unit tests for CalculatorInput data class in tests/unit/calculator/test_models.py
+- [X] T031 [P] [US1] Unit tests for validators in tests/unit/calculator/test_validators.py (all validation rules)
+- [X] T032 [P] [US1] Unit tests for calculator form view in tests/unit/calculator/test_views.py
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can enter all data and see validation feedback
 
@@ -101,31 +101,31 @@ Project uses single Django project structure with calculator app at repository r
 
 ### Implementation for User Story 2
 
-- [ ] T033 [P] [US2] Create ScenarioProjection data class in calculator/models.py per data-model.md
-- [ ] T034 [P] [US2] Create YearlyProjection data class in calculator/models.py per data-model.md
-- [ ] T035 [P] [US2] Create PayoffRecommendation data class in calculator/models.py per data-model.md
-- [ ] T036 [US2] Implement loan calculation service in calculator/services.py (calculate_loan_balance)
-- [ ] T037 [US2] Implement investment calculation service in calculator/services.py (calculate_investment_value)
-- [ ] T038 [US2] Implement UK tax repayment calculation in calculator/services.py (apply_uk_tax_rules)
-- [ ] T039 [US2] Implement scenario projection service in calculator/services.py (project_scenario)
-- [ ] T040 [US2] Implement recommendation engine in calculator/services.py (generate_recommendation)
-- [ ] T041 [US2] Create POST /api/calculate endpoint in calculator/views.py per contracts/calculator-api.json
-- [ ] T042 [US2] Implement request validation and error handling in POST endpoint
-- [ ] T043 [US2] Add calculation result serialization (dataclass to JSON)
-- [ ] T044 [US2] Calculate crossover date logic (when investment > loan cost)
-- [ ] T045 [US2] Calculate net benefit and confidence levels
-- [ ] T046 [US2] Generate plain-language rationale text for recommendation
+- [X] T033 [P] [US2] Create ScenarioProjection data class in calculator/models.py per data-model.md
+- [X] T034 [P] [US2] Create YearlyProjection data class in calculator/models.py per data-model.md
+- [X] T035 [P] [US2] Create PayoffRecommendation data class in calculator/models.py per data-model.md
+- [X] T036 [US2] Implement loan calculation service in calculator/services.py (calculate_loan_balance)
+- [X] T037 [US2] Implement investment calculation service in calculator/services.py (calculate_investment_value)
+- [X] T038 [US2] Implement UK tax repayment calculation in calculator/services.py (apply_uk_tax_rules)
+- [X] T039 [US2] Implement scenario projection service in calculator/services.py (project_scenario)
+- [X] T040 [US2] Implement recommendation engine in calculator/services.py (generate_recommendation)
+- [X] T041 [US2] Create POST /api/calculate endpoint in calculator/views.py per contracts/calculator-api.json
+- [X] T042 [US2] Implement request validation and error handling in POST endpoint
+- [X] T043 [US2] Add calculation result serialization (dataclass to JSON)
+- [X] T044 [US2] Calculate crossover date logic (when investment > loan cost)
+- [X] T045 [US2] Calculate net benefit and confidence levels
+- [X] T046 [US2] Generate plain-language rationale text for recommendation
 
 ### Unit Tests for User Story 2 (CODE-FIRST: Written AFTER implementation)
 
-- [ ] T047 [P] [US2] Unit tests for ScenarioProjection data class in tests/unit/calculator/test_models.py
-- [ ] T048 [P] [US2] Unit tests for YearlyProjection data class in tests/unit/calculator/test_models.py
-- [ ] T049 [P] [US2] Unit tests for loan calculations in tests/unit/calculator/test_services.py
-- [ ] T050 [P] [US2] Unit tests for investment calculations in tests/unit/calculator/test_services.py
-- [ ] T051 [P] [US2] Unit tests for UK tax repayment in tests/unit/calculator/test_services.py
-- [ ] T052 [P] [US2] Unit tests for scenario projection in tests/unit/calculator/test_services.py
-- [ ] T053 [P] [US2] Unit tests for recommendation engine in tests/unit/calculator/test_services.py
-- [ ] T054 [P] [US2] Unit tests for /api/calculate endpoint in tests/unit/calculator/test_views.py
+- [X] T047 [P] [US2] Unit tests for ScenarioProjection data class in tests/unit/calculator/test_models.py
+- [X] T048 [P] [US2] Unit tests for YearlyProjection data class in tests/unit/calculator/test_models.py
+- [X] T049 [P] [US2] Unit tests for loan calculations in tests/unit/calculator/test_services.py
+- [X] T050 [P] [US2] Unit tests for investment calculations in tests/unit/calculator/test_services.py
+- [X] T051 [P] [US2] Unit tests for UK tax repayment in tests/unit/calculator/test_services.py
+- [X] T052 [P] [US2] Unit tests for scenario projection in tests/unit/calculator/test_services.py
+- [X] T053 [P] [US2] Unit tests for recommendation engine in tests/unit/calculator/test_services.py
+- [X] T054 [P] [US2] Unit tests for /api/calculate endpoint in tests/unit/calculator/test_views.py
 
 **Checkpoint**: At this point, User Story 2 should be fully functional - API returns three scenarios with recommendation
 
@@ -139,29 +139,29 @@ Project uses single Django project structure with calculator app at repository r
 
 ### Implementation for User Story 3
 
-- [ ] T055 [P] [US3] Implement Chart.js graph rendering in static/js/calculator.js (renderPayoffGraph function)
-- [ ] T056 [P] [US3] Configure Chart.js dataset structure for three scenario lines
-- [ ] T057 [US3] Implement uncertainty band shading (fill between optimistic and pessimistic)
-- [ ] T058 [US3] Add investment value overlay line on graph
-- [ ] T059 [US3] Implement crossover date annotation markers
-- [ ] T060 [US3] Configure interactive tooltips with financial details
-- [ ] T061 [US3] Implement responsive chart scaling for mobile devices
-- [ ] T062 [US3] Add graph loading state and error handling
-- [ ] T063 [US3] Style graph container and legend in static/css/calculator.css
-- [ ] T064 [US3] Connect form submission to API call and graph update
-- [ ] T065 [US3] Display recommendation text below graph with savings amount
-- [ ] T066 [US3] Implement dynamic graph updates when user changes inputs
+- [X] T055 [P] [US3] Implement Chart.js graph rendering in static/js/calculator.js (renderPayoffGraph function)
+- [X] T056 [P] [US3] Configure Chart.js dataset structure for three scenario lines
+- [X] T057 [US3] Implement uncertainty band shading (fill between optimistic and pessimistic)
+- [X] T058 [US3] Add investment value overlay line on graph
+- [X] T059 [US3] Implement crossover date annotation markers
+- [X] T060 [US3] Configure interactive tooltips with financial details
+- [X] T061 [US3] Implement responsive chart scaling for mobile devices
+- [X] T062 [US3] Add graph loading state and error handling
+- [X] T063 [US3] Style graph container and legend in static/css/calculator.css
+- [X] T064 [US3] Connect form submission to API call and graph update
+- [X] T065 [US3] Display recommendation text below graph with savings amount
+- [X] T066 [US3] Implement dynamic graph updates when user changes inputs
 
 ### Unit Tests for User Story 3 (CODE-FIRST: Written AFTER implementation)
 
 Note: Frontend JavaScript testing is minimal per constitution (Option 4: Minimal frontend testing for simple UIs). Manual testing sufficient for MVP.
 
-- [ ] T067 [US3] Manual testing checklist: Verify graph renders on mobile (320px width)
-- [ ] T068 [US3] Manual testing checklist: Verify graph shows three scenario lines
-- [ ] T069 [US3] Manual testing checklist: Verify uncertainty bands are visible
-- [ ] T070 [US3] Manual testing checklist: Verify tooltips work on hover/touch
-- [ ] T071 [US3] Manual testing checklist: Verify decision markers are annotated
-- [ ] T072 [US3] Manual testing checklist: Verify graph updates when inputs change
+- [X] T067 [US3] Manual testing checklist: Verify graph renders on mobile (320px width)
+- [X] T068 [US3] Manual testing checklist: Verify graph shows three scenario lines
+- [X] T069 [US3] Manual testing checklist: Verify uncertainty bands are visible
+- [X] T070 [US3] Manual testing checklist: Verify tooltips work on hover/touch
+- [X] T071 [US3] Manual testing checklist: Verify decision markers are annotated
+- [X] T072 [US3] Manual testing checklist: Verify graph updates when inputs change
 
 **Checkpoint**: All user stories should now be independently functional - complete calculator with visualization
 
@@ -171,20 +171,22 @@ Note: Frontend JavaScript testing is minimal per constitution (Option 4: Minimal
 
 **Purpose**: Improvements that affect multiple user stories and ensure production readiness
 
-- [ ] T073 [P] Update README.md with project overview, setup instructions, and usage
-- [ ] T074 [P] Add inline code documentation and docstrings per Python conventions
-- [ ] T075 [P] Verify Ruff configuration and run formatting on all Python files
-- [ ] T076 [P] Verify pre-commit hooks are installed and functional
-- [ ] T077 [P] Add edge case validation (age > loan end date, negative values, inverted rates)
-- [ ] T078 [P] Add error logging for calculation failures
-- [ ] T079 [P] Optimize calculation performance (target <2 seconds for 35-year projection)
-- [ ] T080 [P] Verify responsive design works on 320px minimum width
-- [ ] T081 [P] Add loading indicators during calculation
-- [ ] T082 [P] Verify accessibility (ARIA labels, keyboard navigation)
-- [ ] T083 Run quickstart.md validation (10-minute setup test)
-- [ ] T084 Review and validate all acceptance scenarios from spec.md
-- [ ] T085 Create commitizen configuration for conventional commits
-- [ ] T086 Security review: CSRF protection, input sanitization, rate limiting
+- [X] T073 [P] Update README.md with project overview, setup instructions, and usage
+- [X] T074 [P] Add inline code documentation and docstrings per Python conventions
+- [X] T075 [P] Verify Ruff configuration and run formatting on all Python files
+- [X] T076 [P] Verify pre-commit hooks are installed and functional
+- [X] T077 [P] Add edge case validation (age > loan end date, negative values, inverted rates)
+- [X] T078 [P] Add error logging for calculation failures
+- [X] T079 [P] Optimize calculation performance (target <2 seconds for 35-year projection)
+- [X] T080 [P] Verify responsive design works on 320px minimum width
+- [X] T081 [P] Add loading indicators during calculation
+- [X] T082 [P] Verify accessibility (ARIA labels, keyboard navigation)
+- [X] T083 Run quickstart.md validation (10-minute setup test)
+- [X] T084 Review and validate all acceptance scenarios from spec.md
+- [X] T085 Create commitizen configuration for conventional commits
+- [X] T086 Security review: CSRF protection, input sanitization, rate limiting
+
+**Phase 6 Complete**: All polish and production readiness tasks finished.
 
 ---
 
@@ -327,7 +329,7 @@ With multiple developers:
 - **Setup Phase**: 12 tasks
 - **Foundational Phase**: 9 tasks (BLOCKS all user stories)
 - **User Story 1 (P1)**: 11 implementation + 3 test tasks = 14 tasks
-- **User Story 2 (P2)**: 14 implementation + 8 test tasks = 22 tasks  
+- **User Story 2 (P2)**: 14 implementation + 8 test tasks = 22 tasks
 - **User Story 3 (P3)**: 12 implementation + 6 test tasks = 18 tasks
 - **Polish Phase**: 14 tasks
 - **Parallel Opportunities**: 45+ tasks can run in parallel with proper task assignment

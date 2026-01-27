@@ -1,0 +1,55 @@
+{
+  "plan_2": {
+    "repayment_threshold_2023": 27295,
+    "repayment_rate": 0.09,
+    "inflation_adjustment": 0.025,
+    "threshold_history": [
+      {
+        "year": 2021,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      },
+      {
+        "year": 2022,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      },
+      {
+        "year": 2023,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      },
+      {
+        "year": 2024,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      },
+      {
+        "year": 2025,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      },
+      {
+        "year": 2026,
+        "threshold": 27295,
+        "description": "UK Plan 2 student loan repayment threshold"
+      }
+    ],
+    "description": "UK Plan 2 student loans require repayment of 9% of income above the threshold. Threshold is subject to annual adjustment for inflation.",
+    "writeoff_years": 35,
+    "interest_rate_tiers": {
+      "under_threshold": {
+        "description": "RPI inflation rate",
+        "typical_rate": 0.03
+      },
+      "threshold_to_threshold_plus_15k": {
+        "description": "RPI + progressive scale to 3%",
+        "typical_rate": 0.045
+      },
+      "above_threshold_plus_15k": {
+        "description": "RPI + 3%",
+        "typical_rate": 0.06
+      }
+    }
+  }
+}

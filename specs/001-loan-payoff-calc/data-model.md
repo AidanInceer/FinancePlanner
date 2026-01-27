@@ -1,7 +1,7 @@
 # Data Model: Student Loan Payoff Calculator
 
-**Phase**: 1 - Design & Contracts  
-**Purpose**: Define entities, validation rules, and data structures  
+**Phase**: 1 - Design & Contracts
+**Purpose**: Define entities, validation rules, and data structures
 **Date**: 2026-01-26
 
 ## Overview
@@ -65,24 +65,24 @@ class CalculatorInput:
     loan_interest_current: Decimal
     loan_interest_high: Decimal
     loan_interest_low: Decimal
-    
+
     @property
     def loan_end_year(self) -> int:
         return self.graduation_year + self.loan_duration_years
-    
+
     def validate(self) -> list[str]:
         """Returns list of validation errors, empty if valid"""
         errors = []
-        
+
         if not (18 <= self.age <= 100):
             errors.append("Age must be between 18 and 100")
-        
+
         if self.investment_growth_low > self.investment_growth_high:
             errors.append("Investment growth low cannot exceed high")
-        
+
         if not (self.loan_interest_low <= self.loan_interest_current <= self.loan_interest_high):
             errors.append("Loan interest current must be between low and high")
-        
+
         # Add remaining validations...
         return errors
 ```
@@ -224,12 +224,12 @@ class PayoffRecommendation:
     savings_amount: Decimal
     confidence: Confidence
     rationale: str
-    
+
     @staticmethod
     def generate(result: CalculationResult) -> 'PayoffRecommendation':
         """
         Generate recommendation from calculation result
-        
+
         Logic:
         - If realistic.net_benefit > 0 and variance low: KEEP_INVESTING (high confidence)
         - If realistic.net_benefit < 0 and variance low: PAY_OFF_EARLY (high confidence)
@@ -284,19 +284,19 @@ class TaxConfiguration:
     repayment_threshold: Decimal
     repayment_rate: Decimal
     inflation_adjustment: Decimal
-    
+
     @staticmethod
     def load_from_json() -> dict[int, 'TaxConfiguration']:
         """Load tax config from data/uk_tax_thresholds.json"""
         # Implementation in services.py
         pass
-    
+
     def get_threshold_for_year(self, target_year: int) -> Decimal:
         """Calculate threshold for future year with inflation adjustment"""
         years_ahead = target_year - self.year
         if years_ahead <= 0:
             return self.repayment_threshold
-        
+
         # Compound inflation adjustment
         adjusted = self.repayment_threshold * (1 + self.inflation_adjustment) ** years_ahead
         return Decimal(adjusted).quantize(Decimal('0.01'))
@@ -314,13 +314,13 @@ All validation happens in `calculator/validators.py`:
 class CalculatorInputValidator:
     def validate_age(self, age: int) -> list[str]:
         """Validate age is within reasonable bounds"""
-        
+
     def validate_rates(self, low: Decimal, current: Decimal, high: Decimal) -> list[str]:
         """Validate rate range logic"""
-        
+
     def validate_timeline(self, age: int, grad_year: int, current_year: int) -> list[str]:
         """Validate timeline consistency"""
-        
+
     def validate_all(self, input_data: CalculatorInput) -> list[str]:
         """Run all validations and return combined errors"""
 ```
@@ -372,7 +372,7 @@ class UKTaxThreshold(models.Model):
     repayment_threshold = models.DecimalField(max_digits=10, decimal_places=2)
     repayment_rate = models.DecimalField(max_digits=4, decimal_places=3)  # 0.09 = 9%
     inflation_adjustment = models.DecimalField(max_digits=4, decimal_places=3)
-    
+
     class Meta:
         ordering = ['-year']
 ```

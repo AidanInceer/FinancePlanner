@@ -4,10 +4,17 @@ from decimal import Decimal
 
 from calculator.validators import (
     validate_age,
+    validate_ni_category,
     validate_non_negative_decimal,
+    validate_pay_frequency,
+    validate_pension_contribution,
     validate_percentage,
     validate_positive_integer,
+    validate_rate_decimal,
     validate_rate_range,
+    validate_score_percent,
+    validate_student_loan_plan,
+    validate_tax_jurisdiction,
     validate_year,
 )
 
@@ -208,3 +215,68 @@ class TestValidateRateRange:
         is_valid, error = validate_rate_range(3.0, 9.0, 7.0)
         assert is_valid is False
         assert "must be between low" in error
+
+
+class TestTaxCalculatorValidators:
+    """Tests for UK income tax calculator validators."""
+
+    def test_validate_pay_frequency(self):
+        assert validate_pay_frequency("annual")[0] is True
+        assert validate_pay_frequency("monthly")[0] is True
+        assert validate_pay_frequency("weekly")[0] is True
+        assert validate_pay_frequency("daily")[0] is False
+
+    def test_validate_tax_jurisdiction(self):
+        assert validate_tax_jurisdiction("england_wales_ni")[0] is True
+        assert validate_tax_jurisdiction("scotland")[0] is True
+        assert validate_tax_jurisdiction("wales")[0] is False
+
+    def test_validate_ni_category(self):
+        assert validate_ni_category("A")[0] is True
+        assert validate_ni_category("C")[0] is True
+        assert validate_ni_category("X")[0] is False
+
+    def test_validate_student_loan_plan(self):
+        assert validate_student_loan_plan("none")[0] is True
+        assert validate_student_loan_plan("plan_2")[0] is True
+        assert validate_student_loan_plan("postgraduate")[0] is True
+        assert validate_student_loan_plan("plan_3")[0] is False
+
+    def test_validate_pension_contribution(self):
+        assert validate_pension_contribution("none", Decimal("0"))[0] is True
+        assert validate_pension_contribution("percentage", Decimal("5"))[0] is True
+        assert validate_pension_contribution("percentage", Decimal("150"))[0] is False
+        assert validate_pension_contribution("amount", Decimal("100"))[0] is True
+        assert validate_pension_contribution("amount", Decimal("-1"))[0] is False
+
+
+class TestValidateRateDecimal:
+    """Tests for validate_rate_decimal function."""
+
+    def test_valid_rate(self):
+        is_valid, error = validate_rate_decimal(0.05)
+        assert is_valid is True
+        assert error == ""
+
+    def test_rate_out_of_range(self):
+        is_valid, error = validate_rate_decimal(1.5)
+        assert is_valid is False
+        assert "between" in error
+
+    def test_negative_rate(self):
+        is_valid, error = validate_rate_decimal(-0.1)
+        assert is_valid is False
+
+
+class TestValidateScorePercent:
+    """Tests for validate_score_percent function."""
+
+    def test_valid_score(self):
+        is_valid, error = validate_score_percent(75)
+        assert is_valid is True
+        assert error == ""
+
+    def test_score_out_of_range(self):
+        is_valid, error = validate_score_percent(120)
+        assert is_valid is False
+        assert "between 0 and 100" in error

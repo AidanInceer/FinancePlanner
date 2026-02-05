@@ -2,7 +2,14 @@
 
 from decimal import Decimal
 
-from calculator.models import CalculatorInput, ScenarioType
+from calculator.models import (
+    CalculatorInput,
+    EmergencyFundInput,
+    RentVsBuyInput,
+    ResilienceScoreInput,
+    ScenarioType,
+    TimeToFreedomInput,
+)
 
 
 class TestCalculatorInput:
@@ -185,3 +192,87 @@ class TestScenarioType:
         assert ScenarioType.OPTIMISTIC.value == "optimistic"
         assert ScenarioType.PESSIMISTIC.value == "pessimistic"
         assert ScenarioType.REALISTIC.value == "realistic"
+
+
+class TestRentVsBuyInput:
+    """Tests for RentVsBuyInput data class."""
+
+    def test_valid_rent_vs_buy_input(self):
+        calc_input = RentVsBuyInput(
+            property_price=Decimal("300000"),
+            deposit_amount=Decimal("60000"),
+            mortgage_rate=Decimal("0.05"),
+            mortgage_term_years=25,
+            monthly_rent=Decimal("1400"),
+            rent_growth_rate=Decimal("0.03"),
+            home_appreciation_rate=Decimal("0.03"),
+            maintenance_rate=Decimal("0.01"),
+            property_tax_rate=Decimal("0.005"),
+            insurance_annual=Decimal("350"),
+            buying_costs=Decimal("5000"),
+            selling_costs=Decimal("6000"),
+            investment_return_rate=Decimal("0.05"),
+            analysis_years=15,
+        )
+
+        assert calc_input.validate() == []
+
+    def test_deposit_exceeds_price(self):
+        calc_input = RentVsBuyInput(
+            property_price=Decimal("200000"),
+            deposit_amount=Decimal("250000"),
+            mortgage_rate=Decimal("0.05"),
+            mortgage_term_years=25,
+            monthly_rent=Decimal("1200"),
+            rent_growth_rate=Decimal("0.03"),
+            home_appreciation_rate=Decimal("0.03"),
+            maintenance_rate=Decimal("0.01"),
+            property_tax_rate=Decimal("0.005"),
+            insurance_annual=Decimal("350"),
+            buying_costs=Decimal("5000"),
+            selling_costs=Decimal("6000"),
+            investment_return_rate=Decimal("0.05"),
+            analysis_years=15,
+        )
+
+        errors = calc_input.validate()
+        assert any("Deposit amount cannot exceed" in error for error in errors)
+
+
+class TestEmergencyFundInput:
+    """Tests for EmergencyFundInput data class."""
+
+    def test_valid_emergency_fund_input(self):
+        calc_input = EmergencyFundInput(
+            monthly_expenses=Decimal("1800"),
+            target_months=6,
+            current_savings=Decimal("3000"),
+        )
+        assert calc_input.validate() == []
+
+
+class TestResilienceScoreInput:
+    """Tests for ResilienceScoreInput data class."""
+
+    def test_valid_resilience_input(self):
+        calc_input = ResilienceScoreInput(
+            savings=Decimal("8000"),
+            income_stability=70,
+            debt_load=Decimal("4000"),
+            insurance_coverage=65,
+        )
+        assert calc_input.validate() == []
+
+
+class TestTimeToFreedomInput:
+    """Tests for TimeToFreedomInput data class."""
+
+    def test_valid_time_to_freedom_input(self):
+        calc_input = TimeToFreedomInput(
+            annual_expenses=Decimal("28000"),
+            current_investments=Decimal("25000"),
+            annual_contribution=Decimal("8000"),
+            investment_return_rate=Decimal("0.05"),
+            safe_withdrawal_rate=Decimal("0.04"),
+        )
+        assert calc_input.validate() == []

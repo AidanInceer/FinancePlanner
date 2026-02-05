@@ -1,0 +1,136 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UK Income Tax Calculator API",
+    "version": "1.0.0",
+    "description": "Calculate UK income tax, National Insurance, and student loan deductions."
+  },
+  "paths": {
+    "/api/income-tax/calculate": {
+      "post": {
+        "summary": "Calculate UK take-home pay",
+        "operationId": "calculateUkIncomeTax",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/IncomeTaxCalculationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IncomeTaxCalculationResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IncomeTaxCalculationRequest": {
+        "type": "object",
+        "required": [
+          "gross_income",
+          "pay_frequency",
+          "tax_jurisdiction",
+          "ni_category",
+          "student_loan_plan",
+          "tax_year"
+        ],
+        "properties": {
+          "gross_income": { "type": "number", "minimum": 0 },
+          "pay_frequency": { "type": "string", "enum": ["annual", "monthly", "weekly"] },
+          "tax_jurisdiction": { "type": "string", "enum": ["england_wales_ni", "scotland"] },
+          "ni_category": { "type": "string", "enum": ["A", "B", "C", "H", "J", "M", "Z"] },
+          "student_loan_plan": {
+            "type": "string",
+            "enum": ["none", "plan_1", "plan_2", "plan_4", "plan_5", "postgraduate"]
+          },
+          "pension_contribution_type": {
+            "type": "string",
+            "enum": ["none", "percentage", "amount"],
+            "default": "none"
+          },
+          "pension_contribution_value": { "type": "number", "minimum": 0, "default": 0 },
+          "other_pretax_deductions": { "type": "number", "minimum": 0, "default": 0 },
+          "tax_year": { "type": "string", "example": "2025-26" }
+        }
+      },
+      "IncomeTaxCalculationResponse": {
+        "type": "object",
+        "required": [
+          "tax_year",
+          "gross_annual",
+          "taxable_annual",
+          "income_tax_annual",
+          "ni_annual",
+          "student_loan_annual",
+          "total_deductions_annual",
+          "net_annual",
+          "net_monthly",
+          "net_weekly",
+          "effective_deduction_rate",
+          "income_tax_bands",
+          "ni_bands"
+        ],
+        "properties": {
+          "tax_year": { "type": "string" },
+          "gross_annual": { "type": "number" },
+          "taxable_annual": { "type": "number" },
+          "income_tax_annual": { "type": "number" },
+          "ni_annual": { "type": "number" },
+          "student_loan_annual": { "type": "number" },
+          "total_deductions_annual": { "type": "number" },
+          "net_annual": { "type": "number" },
+          "net_monthly": { "type": "number" },
+          "net_weekly": { "type": "number" },
+          "effective_deduction_rate": { "type": "number" },
+          "income_tax_bands": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BandBreakdown" }
+          },
+          "ni_bands": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BandBreakdown" }
+          }
+        }
+      },
+      "BandBreakdown": {
+        "type": "object",
+        "required": ["band_name", "rate", "from", "to", "taxable_amount", "amount"],
+        "properties": {
+          "band_name": { "type": "string" },
+          "rate": { "type": "number" },
+          "from": { "type": "number" },
+          "to": { "type": ["number", "null"] },
+          "taxable_amount": { "type": "number" },
+          "amount": { "type": "number" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["errors"],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

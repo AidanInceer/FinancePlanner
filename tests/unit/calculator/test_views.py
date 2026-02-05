@@ -103,6 +103,21 @@ class TestCalculatorViews:
         assert 'id="loan_interest_high"' in content
         assert 'id="loan_interest_low"' in content
 
+        assert 'id="tax_gross_income"' in content
+        assert 'id="bonus_annual"' in content
+        assert 'id="tax_pay_frequency"' in content
+        assert 'id="tax_year"' in content
+        assert 'id="tax_jurisdiction"' in content
+        assert 'id="ni_category"' in content
+        assert 'id="student_loan_plan"' in content
+
+        assert 'id="rvb_property_price"' in content
+        assert 'id="rvb_deposit_amount"' in content
+        assert 'id="rvb_monthly_rent"' in content
+        assert 'id="ef_monthly_expenses"' in content
+        assert 'id="rs_savings"' in content
+        assert 'id="ff_annual_expenses"' in content
+
     def test_index_view_contains_bootstrap(self):
         """Test index view includes Bootstrap CSS."""
         response = self.client.get(reverse("calculator:index"))
@@ -153,3 +168,135 @@ class TestCalculatorViews:
             content_type="application/json",
         )
         assert response.status_code == 400
+
+    def test_income_tax_endpoint_returns_200(self):
+        """Test income tax calculation endpoint returns results."""
+        response = self.client.post(
+            reverse("calculator:income_tax_calculate"),
+            data=json.dumps(
+                {
+                    "gross_income": 45000,
+                    "bonus_annual": 0,
+                    "pay_frequency": "annual",
+                    "tax_jurisdiction": "england_wales_ni",
+                    "ni_category": "A",
+                    "student_loan_plan": "none",
+                    "pension_contribution_type": "none",
+                    "pension_contribution_value": 0,
+                    "other_pretax_deductions": 0,
+                    "tax_year": "2025-26",
+                }
+            ),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "gross_annual" in data
+        assert "income_tax_annual" in data
+        assert "ni_annual" in data
+        assert "student_loan_annual" in data
+        assert "income_tax_bands" in data
+        assert "ni_bands" in data
+
+    def test_income_tax_endpoint_with_invalid_data(self):
+        """Test income tax endpoint handles invalid input."""
+        response = self.client.post(
+            reverse("calculator:income_tax_calculate"),
+            data=json.dumps(
+                {
+                    "gross_income": -10,
+                    "bonus_annual": 0,
+                    "pay_frequency": "annual",
+                    "tax_jurisdiction": "england_wales_ni",
+                    "ni_category": "A",
+                    "student_loan_plan": "none",
+                    "tax_year": "2025-26",
+                }
+            ),
+            content_type="application/json",
+        )
+        assert response.status_code == 400
+        assert "errors" in response.json()
+
+    def test_rent_vs_buy_endpoint_returns_200(self):
+        response = self.client.post(
+            reverse("calculator:rent_vs_buy_calculate"),
+            data=json.dumps(
+                {
+                    "property_price": 300000,
+                    "deposit_amount": 60000,
+                    "mortgage_rate": 0.05,
+                    "mortgage_term_years": 25,
+                    "monthly_rent": 1400,
+                    "rent_growth_rate": 0.03,
+                    "home_appreciation_rate": 0.03,
+                    "maintenance_rate": 0.01,
+                    "property_tax_rate": 0.005,
+                    "insurance_annual": 350,
+                    "buying_costs": 5000,
+                    "selling_costs": 6000,
+                    "investment_return_rate": 0.05,
+                    "analysis_years": 10,
+                }
+            ),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "summary" in data
+        assert "graph_series" in data
+
+    def test_emergency_fund_endpoint_returns_200(self):
+        response = self.client.post(
+            reverse("calculator:emergency_fund_calculate"),
+            data=json.dumps(
+                {
+                    "monthly_expenses": 2000,
+                    "target_months": 6,
+                    "current_savings": 3000,
+                }
+            ),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "target_fund" in data
+        assert "savings_gap" in data
+
+    def test_resilience_score_endpoint_returns_200(self):
+        response = self.client.post(
+            reverse("calculator:resilience_score_calculate"),
+            data=json.dumps(
+                {
+                    "savings": 8000,
+                    "income_stability": 70,
+                    "debt_load": 4000,
+                    "insurance_coverage": 65,
+                }
+            ),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "resilience_index" in data
+        assert "weak_points" in data
+
+    def test_time_to_freedom_endpoint_returns_200(self):
+        response = self.client.post(
+            reverse("calculator:time_to_freedom_calculate"),
+            data=json.dumps(
+                {
+                    "annual_expenses": 28000,
+                    "current_investments": 25000,
+                    "annual_contribution": 8000,
+                    "investment_return_rate": 0.05,
+                    "safe_withdrawal_rate": 0.04,
+                }
+            ),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "freedom_number" in data
+        assert "timeline_series" in data

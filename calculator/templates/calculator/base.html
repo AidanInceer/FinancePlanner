@@ -37,12 +37,16 @@
     </nav>
 
     <main class="container my-4">
-        {% block content %}{% endblock %}
+        {% block calculator_header %}{% endblock %}
+        <div class="calculator-content">
+            {% block content %}{% endblock %}
+        </div>
+        {% block calculator_footer %}{% endblock %}
     </main>
 
     <footer class="bg-light py-3 mt-5">
         <div class="container text-center text-muted">
-            <p class="mb-0">&copy; 2026 FinancePlanner | UK Plan 2 Student Loan Calculator</p>
+            <p class="mb-0">&copy; 2026 FinancePlanner | UK Student Loan & Income Tax Calculators</p>
         </div>
     </footer>
 

@@ -23,218 +23,880 @@
             </div>
         </div>
 
-        <!-- Error message -->
-        <div id="error-message" class="alert alert-danger d-none" role="alert">
-            An error occurred during calculation.
-        </div>
+        <!-- Calculator Tabs -->
+        <ul class="nav nav-tabs" id="calculator-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="student-loan-tab" data-bs-toggle="tab"
+                        data-bs-target="#student-loan" type="button" role="tab"
+                        aria-controls="student-loan" aria-selected="true">
+                    Student Loan Payoff
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="income-tax-tab" data-bs-toggle="tab"
+                        data-bs-target="#income-tax" type="button" role="tab"
+                        aria-controls="income-tax" aria-selected="false">
+                    UK Income Tax
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rent-vs-buy-tab" data-bs-toggle="tab"
+                        data-bs-target="#rent-vs-buy" type="button" role="tab"
+                        aria-controls="rent-vs-buy" aria-selected="false">
+                    Rent vs Buy
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="emergency-fund-tab" data-bs-toggle="tab"
+                        data-bs-target="#emergency-fund" type="button" role="tab"
+                        aria-controls="emergency-fund" aria-selected="false">
+                    Emergency Fund
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="resilience-tab" data-bs-toggle="tab"
+                        data-bs-target="#resilience" type="button" role="tab"
+                        aria-controls="resilience" aria-selected="false">
+                    Resilience Score
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="freedom-tab" data-bs-toggle="tab"
+                        data-bs-target="#freedom" type="button" role="tab"
+                        aria-controls="freedom" aria-selected="false">
+                    Time-to-Freedom
+                </button>
+            </li>
+        </ul>
 
-        <!-- Calculator Form -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-primary text-white">
-                <h2 class="h5 mb-0">Your Financial Information</h2>
-            </div>
-            <div class="card-body">
-                <form id="calculator-form" novalidate aria-label="Student loan calculator form">
-                    {% csrf_token %}
+        <div class="tab-content pt-4" id="calculator-tab-content">
+            <div class="tab-pane fade show active" id="student-loan" role="tabpanel"
+                 aria-labelledby="student-loan-tab">
+                <!-- Calculator Form -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Your Financial Information</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="calculator-form" novalidate aria-label="Student loan calculator form">
+                            {% csrf_token %}
 
-                    <!-- Personal Information -->
-                    <div class="mb-4" role="group" aria-labelledby="personal-info-heading">
-                        <h3 id="personal-info-heading" class="h6 mb-3 text-primary">Personal Information</h3>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="age" class="form-label">Current Age</label>
-                                <input type="number" class="form-control" id="age" name="age"
-                                       min="18" max="100" required>
-                                <div class="invalid-feedback">
-                                    Age must be between 18 and 100
+                            <!-- Personal Information -->
+                            <div class="mb-4" role="group" aria-labelledby="personal-info-heading">
+                                <h3 id="personal-info-heading" class="h6 mb-3 text-primary">Personal Information</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="age" class="form-label">Current Age</label>
+                                        <input type="number" class="form-control" id="age" name="age"
+                                               min="18" max="100" required>
+                                        <div class="invalid-feedback">
+                                            Age must be between 18 and 100
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="current_year" class="form-label">Current Year</label>
+                                        <input type="number" class="form-control" id="current_year" name="current_year"
+                                               min="1980" max="2100" required>
+                                        <small class="form-text text-muted">Year to start calculations from</small>
+                                        <div class="invalid-feedback">
+                                            Enter a valid year
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="graduation_year" class="form-label">Graduation Year</label>
+                                        <input type="number" class="form-control" id="graduation_year"
+                                               name="graduation_year" min="1980" max="2040" required>
+                                        <div class="invalid-feedback">
+                                            Enter a valid graduation year
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="loan_duration_years" class="form-label">Loan Duration (years)</label>
+                                        <input type="number" class="form-control" id="loan_duration_years"
+                                               name="loan_duration_years" min="1" max="50" value="35" required>
+                                        <small class="form-text text-muted">UK Plan 2 loans are typically 35 years</small>
+                                        <div class="invalid-feedback">
+                                            Duration must be between 1 and 50 years
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="loan_end_year" class="form-label">Loan End Year</label>
+                                        <input type="text" class="form-control" id="loan_end_year"
+                                               name="loan_end_year" readonly>
+                                        <small class="form-text text-muted">Calculated automatically</small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="current_year" class="form-label">Current Year</label>
-                                <input type="number" class="form-control" id="current_year" name="current_year"
-                                       min="1980" max="2100" required>
-                                <small class="form-text text-muted">Year to start calculations from</small>
-                                <div class="invalid-feedback">
-                                    Enter a valid year
+
+                            <!-- Investment Information -->
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 text-primary">Investment Details</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="investment_amount" class="form-label">Current Investment Amount (£)</label>
+                                        <input type="number" class="form-control" id="investment_amount"
+                                               name="investment_amount" min="0" step="0.01" required>
+                                        <div class="invalid-feedback">
+                                            Enter a valid investment amount
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="investment_growth_low" class="form-label">Pessimistic Return (%)</label>
+                                        <input type="number" class="form-control" id="investment_growth_low"
+                                               name="investment_growth_low" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Return must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="investment_growth_average" class="form-label">Average Return (%)</label>
+                                        <input type="number" class="form-control" id="investment_growth_average"
+                                               name="investment_growth_average" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Return must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="investment_growth_high" class="form-label">Optimistic Return (%)</label>
+                                        <input type="number" class="form-control" id="investment_growth_high"
+                                               name="investment_growth_high" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Return must be between 0% and 20%
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="graduation_year" class="form-label">Graduation Year</label>
-                                <input type="number" class="form-control" id="graduation_year"
-                                       name="graduation_year" min="1980" max="2040" required>
-                                <div class="invalid-feedback">
-                                    Enter a valid graduation year
+
+                            <!-- Income and Loan Information -->
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 text-primary">Income & Loan Details</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="pre_tax_income" class="form-label">Annual Pre-Tax Income (£)</label>
+                                        <input type="number" class="form-control" id="pre_tax_income"
+                                               name="pre_tax_income" min="0" step="0.01" required>
+                                        <div class="invalid-feedback">
+                                            Enter a valid income amount
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="initial_loan_balance" class="form-label">Current Loan Balance (£)</label>
+                                        <input type="number" class="form-control" id="initial_loan_balance"
+                                               name="initial_loan_balance" min="0" step="0.01" required>
+                                        <div class="invalid-feedback">
+                                            Enter a valid loan balance
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="salary_growth_pessimistic" class="form-label">Salary Growth - Pessimistic (%)</label>
+                                        <input type="number" class="form-control" id="salary_growth_pessimistic"
+                                               name="salary_growth_pessimistic" min="0" max="20" step="0.1" value="2" required>
+                                        <small class="form-text text-muted">Conservative annual salary increase</small>
+                                        <div class="invalid-feedback">
+                                            Growth must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="salary_growth_optimistic" class="form-label">Salary Growth - Optimistic (%)</label>
+                                        <input type="number" class="form-control" id="salary_growth_optimistic"
+                                               name="salary_growth_optimistic" min="0" max="20" step="0.1" value="5" required>
+                                        <small class="form-text text-muted">Aggressive annual salary increase</small>
+                                        <div class="invalid-feedback">
+                                            Growth must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="loan_repayment_annual" class="form-label">Annual Repayment (£)</label>
+                                        <input type="text" class="form-control" id="loan_repayment_annual"
+                                               name="loan_repayment_annual" readonly>
+                                        <small class="form-text text-muted">Auto-calculated: 9% above £27,295</small>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="loan_interest_low" class="form-label">Optimistic Interest Rate (%)</label>
+                                        <input type="number" class="form-control" id="loan_interest_low"
+                                               name="loan_interest_low" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Rate must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="loan_interest_current" class="form-label">Current Interest Rate (%)</label>
+                                        <input type="number" class="form-control" id="loan_interest_current"
+                                               name="loan_interest_current" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Rate must be between 0% and 20%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="loan_interest_high" class="form-label">Pessimistic Interest Rate (%)</label>
+                                        <input type="number" class="form-control" id="loan_interest_high"
+                                               name="loan_interest_high" min="0" max="20" step="0.1" required>
+                                        <div class="invalid-feedback">
+                                            Rate must be between 0% and 20%
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="loan_duration_years" class="form-label">Loan Duration (years)</label>
-                                <input type="number" class="form-control" id="loan_duration_years"
-                                       name="loan_duration_years" min="1" max="50" value="35" required>
-                                <small class="form-text text-muted">UK Plan 2 loans are typically 35 years</small>
-                                <div class="invalid-feedback">
-                                    Duration must be between 1 and 50 years
-                                </div>
+
+                            <!-- Form validation feedback -->
+                            <div id="loan-form-errors" class="alert alert-danger d-none" role="alert"></div>
+
+                            <!-- Submit button -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Calculate Optimal Strategy
+                                </button>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="loan_end_year" class="form-label">Loan End Year</label>
-                                <input type="text" class="form-control" id="loan_end_year"
-                                       name="loan_end_year" readonly>
-                                <small class="form-text text-muted">Calculated automatically</small>
-                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Results section (hidden until calculation) -->
+                <div id="results-section" class="d-none">
+                    <!-- Recommendation Card -->
+                    <div id="recommendation-card" class="card shadow-sm mb-4 recommendation-card">
+                        <div class="card-body">
+                            <h2 class="h5 mb-3">Recommendation</h2>
+                            <div id="recommendation-content"></div>
                         </div>
                     </div>
 
-                    <!-- Investment Information -->
-                    <div class="mb-4">
-                        <h3 class="h6 mb-3 text-primary">Investment Details</h3>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="investment_amount" class="form-label">Current Investment Amount (£)</label>
-                                <input type="number" class="form-control" id="investment_amount"
-                                       name="investment_amount" min="0" step="0.01" required>
-                                <div class="invalid-feedback">
-                                    Enter a valid investment amount
-                                </div>
-                            </div>
+                    <!-- Graph -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Payoff Scenarios Over Time</h2>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="investment_growth_low" class="form-label">Pessimistic Return (%)</label>
-                                <input type="number" class="form-control" id="investment_growth_low"
-                                       name="investment_growth_low" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Return must be between 0% and 20%
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="investment_growth_average" class="form-label">Average Return (%)</label>
-                                <input type="number" class="form-control" id="investment_growth_average"
-                                       name="investment_growth_average" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Return must be between 0% and 20%
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="investment_growth_high" class="form-label">Optimistic Return (%)</label>
-                                <input type="number" class="form-control" id="investment_growth_high"
-                                       name="investment_growth_high" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Return must be between 0% and 20%
-                                </div>
+                        <div class="card-body">
+                            <div id="payoff-graph-container">
+                                <canvas id="payoff-chart"></canvas>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Income and Loan Information -->
-                    <div class="mb-4">
-                        <h3 class="h6 mb-3 text-primary">Income & Loan Details</h3>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="pre_tax_income" class="form-label">Annual Pre-Tax Income (£)</label>
-                                <input type="number" class="form-control" id="pre_tax_income"
-                                       name="pre_tax_income" min="0" step="0.01" required>
-                                <div class="invalid-feedback">
-                                    Enter a valid income amount
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="initial_loan_balance" class="form-label">Current Loan Balance (£)</label>
-                                <input type="number" class="form-control" id="initial_loan_balance"
-                                       name="initial_loan_balance" min="0" step="0.01" required>
-                                <div class="invalid-feedback">
-                                    Enter a valid loan balance
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="salary_growth_pessimistic" class="form-label">Salary Growth - Pessimistic (%)</label>
-                                <input type="number" class="form-control" id="salary_growth_pessimistic"
-                                       name="salary_growth_pessimistic" min="0" max="20" step="0.1" value="2" required>
-                                <small class="form-text text-muted">Conservative annual salary increase</small>
-                                <div class="invalid-feedback">
-                                    Growth must be between 0% and 20%
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="salary_growth_optimistic" class="form-label">Salary Growth - Optimistic (%)</label>
-                                <input type="number" class="form-control" id="salary_growth_optimistic"
-                                       name="salary_growth_optimistic" min="0" max="20" step="0.1" value="5" required>
-                                <small class="form-text text-muted">Aggressive annual salary increase</small>
-                                <div class="invalid-feedback">
-                                    Growth must be between 0% and 20%
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="loan_repayment_annual" class="form-label">Annual Repayment (£)</label>
-                                <input type="text" class="form-control" id="loan_repayment_annual"
-                                       name="loan_repayment_annual" readonly>
-                                <small class="form-text text-muted">Auto-calculated: 9% above £27,295</small>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="loan_interest_low" class="form-label">Optimistic Interest Rate (%)</label>
-                                <input type="number" class="form-control" id="loan_interest_low"
-                                       name="loan_interest_low" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Rate must be between 0% and 20%
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="loan_interest_current" class="form-label">Current Interest Rate (%)</label>
-                                <input type="number" class="form-control" id="loan_interest_current"
-                                       name="loan_interest_current" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Rate must be between 0% and 20%
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="loan_interest_high" class="form-label">Pessimistic Interest Rate (%)</label>
-                                <input type="number" class="form-control" id="loan_interest_high"
-                                       name="loan_interest_high" min="0" max="20" step="0.1" required>
-                                <div class="invalid-feedback">
-                                    Rate must be between 0% and 20%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Form validation feedback -->
-                    <div id="form-errors" class="alert alert-danger d-none" role="alert"></div>
-
-                    <!-- Submit button -->
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            Calculate Optimal Strategy
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Results section (hidden until calculation) -->
-        <div id="results-section" class="d-none">
-            <!-- Recommendation Card -->
-            <div id="recommendation-card" class="card shadow-sm mb-4 recommendation-card">
-                <div class="card-body">
-                    <h2 class="h5 mb-3">Recommendation</h2>
-                    <div id="recommendation-content"></div>
                 </div>
             </div>
 
-            <!-- Graph -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Payoff Scenarios Over Time</h2>
+            <div class="tab-pane fade" id="income-tax" role="tabpanel" aria-labelledby="income-tax-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">UK Income Tax Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="income-tax-form" novalidate aria-label="UK income tax calculator form">
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 text-primary">Income Details</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tax_gross_income" class="form-label">Gross Income (£)</label>
+                                        <input type="number" class="form-control" id="tax_gross_income"
+                                               name="gross_income" min="0" step="0.01" required>
+                                        <div class="invalid-feedback">Enter a valid gross income</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tax_pay_frequency" class="form-label">Pay Frequency</label>
+                                        <select class="form-select" id="tax_pay_frequency" name="pay_frequency" required>
+                                            <option value="annual">Annual</option>
+                                            <option value="monthly">Monthly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="bonus_annual" class="form-label">Annual Bonus (£)</label>
+                                        <input type="number" class="form-control" id="bonus_annual"
+                                               name="bonus_annual" min="0" step="0.01" value="0">
+                                        <small class="form-text text-muted">Optional bonus paid yearly</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tax_year" class="form-label">Tax Year</label>
+                                        <select class="form-select" id="tax_year" name="tax_year" required>
+                                            <option value="2025-26" selected>2025-26</option>
+                                        </select>
+                                        <small class="form-text text-muted">Latest published tax year</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tax_jurisdiction" class="form-label">Tax Jurisdiction</label>
+                                        <select class="form-select" id="tax_jurisdiction" name="tax_jurisdiction" required>
+                                            <option value="england_wales_ni">England/Wales/Northern Ireland</option>
+                                            <option value="scotland">Scotland</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 text-primary">National Insurance & Student Loan</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ni_category" class="form-label">NI Category</label>
+                                        <select class="form-select" id="ni_category" name="ni_category" required>
+                                            <option value="A" selected>A (Standard)</option>
+                                            <option value="B">B (Reduced rate)</option>
+                                            <option value="C">C (Over State Pension age)</option>
+                                            <option value="H">H (Apprentice under 25)</option>
+                                            <option value="J">J (Deferment)</option>
+                                            <option value="M">M (Under 21)</option>
+                                            <option value="Z">Z (Under 21 with deferment)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="student_loan_plan" class="form-label">Student Loan Plan</label>
+                                        <select class="form-select" id="student_loan_plan" name="student_loan_plan" required>
+                                            <option value="none" selected>No student loan</option>
+                                            <option value="plan_1">Plan 1</option>
+                                            <option value="plan_2">Plan 2</option>
+                                            <option value="plan_4">Plan 4</option>
+                                            <option value="plan_5">Plan 5</option>
+                                            <option value="postgraduate">Postgraduate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 text-primary">Pre-Tax Adjustments</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="pension_contribution_type" class="form-label">Pension Contribution</label>
+                                        <select class="form-select" id="pension_contribution_type" name="pension_contribution_type">
+                                            <option value="none" selected>None</option>
+                                            <option value="percentage">Percentage of gross</option>
+                                            <option value="amount">Fixed amount</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="pension_contribution_value" class="form-label">Pension Value</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="pension_contribution_value"
+                                                   name="pension_contribution_value" min="0" step="0.01" value="0">
+                                            <span class="input-group-text" id="pension-value-suffix">£</span>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Choose percentage or annual amount above
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="other_pretax_deductions" class="form-label">Other Pre-Tax Deductions (£)</label>
+                                        <input type="number" class="form-control" id="other_pretax_deductions"
+                                               name="other_pretax_deductions" min="0" step="0.01" value="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tax-form-errors" class="alert alert-danger d-none" role="alert"></div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Calculate Take-Home Pay
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div id="payoff-graph-container">
-                        <canvas id="payoff-chart"></canvas>
+
+                <div id="tax-results-section" class="d-none">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Summary (Tax Year <span id="tax-summary-year"></span>)</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Gross Annual</span>
+                                        <span id="summary-gross" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Taxable Income</span>
+                                        <span id="summary-taxable" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Total Deductions</span>
+                                        <span id="summary-total-deductions" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Income Tax</span>
+                                        <span id="summary-income-tax" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">National Insurance</span>
+                                        <span id="summary-ni" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Student Loan</span>
+                                        <span id="summary-student-loan" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Net Annual</span>
+                                        <span id="summary-net-annual" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item highlight" id="summary-net-monthly-card">
+                                        <span class="label">Net Monthly</span>
+                                        <span id="summary-net-monthly" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Net Weekly</span>
+                                        <span id="summary-net-weekly" class="value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <span class="label">Effective Deduction Rate</span>
+                                <span id="summary-effective-rate" class="value"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Income Tax Breakdown</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle" aria-label="Income tax breakdown">
+                                    <thead>
+                                        <tr>
+                                            <th>Band</th>
+                                            <th>Rate</th>
+                                            <th>Taxable</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="income-tax-breakdown"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">National Insurance Breakdown</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle" aria-label="National insurance breakdown">
+                                    <thead>
+                                        <tr>
+                                            <th>Band</th>
+                                            <th>Rate</th>
+                                            <th>Taxable</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ni-breakdown"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="rent-vs-buy" role="tabpanel" aria-labelledby="rent-vs-buy-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Rent vs Buy Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="rent-vs-buy-form" novalidate aria-label="Rent vs buy calculator form">
+                            {% csrf_token %}
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 calculator-section-title">Home Purchase Inputs</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_property_price" class="form-label">Property Price (£)</label>
+                                        <input type="number" class="form-control" id="rvb_property_price"
+                                               min="0" step="1000" value="300000" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_deposit_amount" class="form-label">Deposit Amount (£)</label>
+                                        <input type="number" class="form-control" id="rvb_deposit_amount"
+                                               min="0" step="1000" value="60000" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_mortgage_rate" class="form-label">Mortgage Rate (%)</label>
+                                        <input type="number" class="form-control" id="rvb_mortgage_rate"
+                                               min="0" max="20" step="0.1" value="4.8" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_mortgage_term" class="form-label">Mortgage Term (years)</label>
+                                        <input type="number" class="form-control" id="rvb_mortgage_term"
+                                               min="1" max="50" value="25" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 calculator-section-title">Rent Assumptions</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_monthly_rent" class="form-label">Monthly Rent (£)</label>
+                                        <input type="number" class="form-control" id="rvb_monthly_rent"
+                                               min="0" step="50" value="1400" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_rent_growth" class="form-label">Rent Growth (%)</label>
+                                        <input type="number" class="form-control" id="rvb_rent_growth"
+                                               min="0" max="20" step="0.1" value="3.0" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="h6 mb-3 calculator-section-title">Property & Investment Assumptions</h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_home_growth" class="form-label">Home Appreciation (%)</label>
+                                        <input type="number" class="form-control" id="rvb_home_growth"
+                                               min="0" max="20" step="0.1" value="3.0" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_investment_return" class="form-label">Investment Return (%)</label>
+                                        <input type="number" class="form-control" id="rvb_investment_return"
+                                               min="0" max="20" step="0.1" value="5.0" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_maintenance_rate" class="form-label">Maintenance (% of value)</label>
+                                        <input type="number" class="form-control" id="rvb_maintenance_rate"
+                                               min="0" max="10" step="0.1" value="1.0" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_property_tax_rate" class="form-label">Property Tax (% of value)</label>
+                                        <input type="number" class="form-control" id="rvb_property_tax_rate"
+                                               min="0" max="10" step="0.1" value="0.5" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_insurance_annual" class="form-label">Insurance Annual (£)</label>
+                                        <input type="number" class="form-control" id="rvb_insurance_annual"
+                                               min="0" step="50" value="350" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_buying_costs" class="form-label">Buying Costs (£)</label>
+                                        <input type="number" class="form-control" id="rvb_buying_costs"
+                                               min="0" step="100" value="5000" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_selling_costs" class="form-label">Selling Costs (£)</label>
+                                        <input type="number" class="form-control" id="rvb_selling_costs"
+                                               min="0" step="100" value="6000" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rvb_analysis_years" class="form-label">Analysis Horizon (years)</label>
+                                        <input type="number" class="form-control" id="rvb_analysis_years"
+                                               min="1" max="60" value="15" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="rent-vs-buy-errors" class="alert alert-danger d-none" role="alert"></div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Compare Rent vs Buy</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="rent-vs-buy-results" class="d-none">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h2 class="h5 mb-3">Summary</h2>
+                            <p id="rvb-summary-text" class="mb-0"></p>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Key Outcomes</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 calculator-summary">
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Total Rent Cost</span>
+                                        <span id="rvb-total-rent" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Total Buy Cost</span>
+                                        <span id="rvb-total-buy" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Break-Even</span>
+                                        <span id="rvb-break-even" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <span class="label">Rent Net Worth</span>
+                                        <span id="rvb-net-rent" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <span class="label">Buy Net Worth</span>
+                                        <span id="rvb-net-buy" class="value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Net Worth Projection</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="calculator-graph">
+                                <canvas id="rent-vs-buy-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="emergency-fund" role="tabpanel" aria-labelledby="emergency-fund-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Emergency Fund Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="emergency-fund-form" novalidate aria-label="Emergency fund calculator form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="ef_monthly_expenses" class="form-label">Monthly Expenses (£)</label>
+                                    <input type="number" class="form-control" id="ef_monthly_expenses"
+                                           min="0" step="50" value="1800" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ef_target_months" class="form-label">Target Coverage (months)</label>
+                                    <input type="number" class="form-control" id="ef_target_months"
+                                           min="1" max="36" value="6" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ef_current_savings" class="form-label">Current Savings (£)</label>
+                                    <input type="number" class="form-control" id="ef_current_savings"
+                                           min="0" step="100" value="3000">
+                                </div>
+                            </div>
+                            <div id="emergency-fund-errors" class="alert alert-danger d-none" role="alert"></div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Calculate Emergency Fund</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="emergency-fund-results" class="d-none">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Emergency Fund Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Target Fund</span>
+                                        <span id="ef-target-fund" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Savings Gap</span>
+                                        <span id="ef-savings-gap" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Current Coverage</span>
+                                        <span id="ef-coverage" class="value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="resilience" role="tabpanel" aria-labelledby="resilience-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Financial Resilience Score</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="resilience-form" novalidate aria-label="Financial resilience score form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="rs_savings" class="form-label">Savings (£)</label>
+                                    <input type="number" class="form-control" id="rs_savings"
+                                           min="0" step="500" value="8000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="rs_debt_load" class="form-label">Debt Load (£)</label>
+                                    <input type="number" class="form-control" id="rs_debt_load"
+                                           min="0" step="500" value="4000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="rs_income_stability" class="form-label">Income Stability (0-100)</label>
+                                    <input type="number" class="form-control" id="rs_income_stability"
+                                           min="0" max="100" step="1" value="70" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="rs_insurance" class="form-label">Insurance Coverage (0-100)</label>
+                                    <input type="number" class="form-control" id="rs_insurance"
+                                           min="0" max="100" step="1" value="65" required>
+                                </div>
+                            </div>
+                            <div id="resilience-errors" class="alert alert-danger d-none" role="alert"></div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Calculate Resilience Score</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="resilience-results" class="d-none">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Resilience Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="summary-item highlight">
+                                        <span class="label">Resilience Index</span>
+                                        <span id="rs-index" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="summary-item">
+                                        <span class="label">Summary</span>
+                                        <span id="rs-summary" class="value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h3 class="h6">Weak Points</h3>
+                                <ul id="rs-weak-points" class="mb-0"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="freedom" role="tabpanel" aria-labelledby="freedom-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Time-to-Freedom Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="freedom-form" novalidate aria-label="Time-to-freedom calculator form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="ff_annual_expenses" class="form-label">Annual Expenses (£)</label>
+                                    <input type="number" class="form-control" id="ff_annual_expenses"
+                                           min="0" step="500" value="28000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ff_current_investments" class="form-label">Current Investments (£)</label>
+                                    <input type="number" class="form-control" id="ff_current_investments"
+                                           min="0" step="1000" value="25000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ff_annual_contribution" class="form-label">Annual Contribution (£)</label>
+                                    <input type="number" class="form-control" id="ff_annual_contribution"
+                                           min="0" step="500" value="8000" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ff_return_rate" class="form-label">Investment Return (%)</label>
+                                    <input type="number" class="form-control" id="ff_return_rate"
+                                           min="0" max="20" step="0.1" value="5.0" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ff_withdrawal_rate" class="form-label">Safe Withdrawal Rate (%)</label>
+                                    <input type="number" class="form-control" id="ff_withdrawal_rate"
+                                           min="1" max="10" step="0.1" value="4.0" required>
+                                </div>
+                            </div>
+                            <div id="freedom-errors" class="alert alert-danger d-none" role="alert"></div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">Calculate Freedom Timeline</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="freedom-results" class="d-none">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Freedom Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Freedom Number</span>
+                                        <span id="ff-number" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item highlight">
+                                        <span class="label">Timeline</span>
+                                        <span id="ff-timeline" class="value"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-item">
+                                        <span class="label">Summary</span>
+                                        <span id="ff-summary" class="value"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Timeline Projection</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="calculator-graph">
+                                <canvas id="freedom-chart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

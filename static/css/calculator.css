@@ -1,120 +1,317 @@
-/* Student Loan Payoff Calculator Styles */
-
+/* FinancePlanner – Glass light UI */
 :root {
-    --primary-color: #0d6efd;
-    --success-color: #198754;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
+    color-scheme: light;
+    --bg: #f5f8fc;
+    --panel: rgba(255, 255, 255, 0.78);
+    --panel-strong: rgba(255, 255, 255, 0.94);
+    --card: rgba(255, 255, 255, 0.86);
+    --muted: #5c6a83;
+    --ink: #0e1931;
+    --primary: #4f82ff;
+    --primary-strong: #2f63e0;
+    --accent: #1fc9b4;
+    --success: #19a36f;
+    --warning: #f2b236;
+    --danger: #ec4a4a;
+    --border: rgba(14, 25, 48, 0.1);
+    --border-strong: rgba(14, 25, 48, 0.18);
+    --shadow-soft: 0 16px 42px rgba(14, 25, 48, 0.12);
+    --shadow-strong: 0 28px 72px rgba(14, 25, 48, 0.14);
+    --glow: 0 0 28px rgba(79, 130, 255, 0.35);
+    --blur: 14px;
+    --font-display: "Space Grotesk", "Manrope", "Helvetica Neue", sans-serif;
+    --font-body: "Space Grotesk", "Manrope", "Helvetica Neue", sans-serif;
 }
 
-body {
+body.app-shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: radial-gradient(120% 90% at 12% 8%, rgba(79, 130, 255, 0.14), transparent 42%),
+        radial-gradient(110% 80% at 82% 6%, rgba(31, 201, 180, 0.14), transparent 46%),
+        linear-gradient(180deg, #fdfdff 0%, #eff4fb 55%, #f6f9fc 100%);
+    color: var(--ink);
+    position: relative;
+    overflow-x: hidden;
+    font-family: var(--font-body);
+}
+
+body.app-shell::before,
+body.app-shell::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 15% 22%, rgba(79, 130, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(31, 201, 180, 0.12), transparent 26%),
+        radial-gradient(circle at 70% 78%, rgba(79, 130, 255, 0.08), transparent 32%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.65;
 }
 
 main {
     flex: 1;
 }
 
-.form-label {
-    font-weight: 500;
+.main-shell {
+    position: relative;
+    z-index: 1;
 }
 
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+.navbar.glass-nav {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-bottom: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-soft);
+}
+
+.nav-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.navbar.glass-nav .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--ink);
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: var(--panel-strong);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-soft);
+}
+
+.brand-orb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffffff, rgba(79, 130, 255, 0.9) 38%, rgba(31, 201, 180, 0.9) 78%);
+    box-shadow: var(--glow);
+}
+
+.beta-chip {
+    font-size: 0.75rem;
+    color: var(--ink);
+    background: #e9f1ff;
+    padding: 0.18rem 0.65rem;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    border: 1px solid var(--border-strong);
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    color: var(--ink);
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, rgba(79, 130, 255, 0.16), rgba(31, 201, 180, 0.12));
+    border-bottom: 1px solid var(--border-strong);
+    color: var(--ink);
+}
+
+.text-muted {
+    color: var(--muted) !important;
+}
+
+.form-label {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.form-control,
+.form-select {
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    border-radius: 0.95rem;
+    box-shadow: inset 0 1px 1px rgba(14, 25, 48, 0.05);
+    color: var(--ink);
+    padding: 0.85rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: rgba(79, 130, 255, 0.45);
+    box-shadow: 0 0 0 0.16rem rgba(79, 130, 255, 0.18);
+    background: #ffffff;
+    color: var(--ink);
+}
+
+.form-control::placeholder {
+    color: rgba(92, 106, 131, 0.7);
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+    border: 1px solid rgba(79, 130, 255, 0.45);
+    border-radius: 0.95rem;
+    box-shadow: 0 14px 30px rgba(79, 130, 255, 0.25);
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
 
-.btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
+.btn-primary:hover,
+.btn-primary:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 40px rgba(79, 130, 255, 0.32);
 }
 
-/* Graph container */
-#payoff-graph-container {
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-ghost {
+    background: var(--panel-strong);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 0.95rem;
+    font-weight: 600;
+    padding: 0.75rem 1.2rem;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 18px rgba(14, 25, 48, 0.08);
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus {
+    border-color: rgba(79, 130, 255, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(14, 25, 48, 0.12);
+}
+
+.nav-tabs {
+    border-bottom: none;
+    gap: 0.55rem;
+    padding: 0.45rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1.1rem;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(12px);
+}
+
+.nav-tabs .nav-link {
+    border: 1px solid var(--border);
+    border-radius: 0.95rem;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0.7rem 1.05rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.18s ease;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    color: var(--ink);
+    border-color: rgba(79, 130, 255, 0.4);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--ink);
+    background: linear-gradient(135deg, rgba(79, 130, 255, 0.16), rgba(31, 201, 180, 0.12));
+    border-color: rgba(79, 130, 255, 0.55);
+    box-shadow: var(--glow);
+}
+
+.calculator-section-title,
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.calculator-content {
     position: relative;
-    height: 400px;
-    margin: 2rem 0;
 }
 
-@media (max-width: 768px) {
-    #payoff-graph-container {
-        height: 300px;
-    }
+.calculator-summary {
+    display: grid;
+    gap: 1rem;
 }
 
-/* Mobile responsiveness for 320px minimum width */
-@media (max-width: 576px) {
-    body {
-        font-size: 0.9rem;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-    }
-
-    .container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .form-label {
-        font-size: 0.875rem;
-    }
-
-    .btn {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-    }
-
-    #payoff-graph-container {
-        height: 250px;
-        margin: 1rem 0;
-    }
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 22px rgba(14, 25, 48, 0.08);
+    height: 100%;
 }
 
-@media (max-width: 360px) {
-    #payoff-graph-container {
-        height: 220px;
-    }
-
-    .form-control {
-        font-size: 0.875rem;
-    }
+.summary-item .label {
+    font-size: 0.9rem;
+    color: var(--muted);
 }
 
+.summary-item .value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
 
-/* Recommendation card */
+.summary-item.highlight {
+    background: linear-gradient(135deg, rgba(79, 130, 255, 0.08), rgba(31, 201, 180, 0.08));
+    border-color: rgba(79, 130, 255, 0.45);
+    box-shadow: var(--glow);
+}
+
 .recommendation-card {
-    border-left: 4px solid var(--success-color);
+    border-left: 4px solid var(--success);
 }
 
 .recommendation-card.warning {
-    border-left-color: var(--warning-color);
+    border-left-color: var(--warning);
 }
 
 .recommendation-card.danger {
-    border-left-color: var(--danger-color);
+    border-left-color: var(--danger);
 }
 
-/* Loading spinner */
+.calculator-graph,
+#payoff-graph-container {
+    position: relative;
+    height: 400px;
+    margin: 1.5rem 0;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1.1rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    padding: 0.75rem;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+}
+
+.calculator-graph canvas {
+    max-height: 100%;
+}
+
+#payoff-graph-container {
+    height: 420px;
+}
+
 .loading-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    inset: 0;
+    background: rgba(245, 248, 252, 0.8);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -125,71 +322,78 @@ main {
     display: none;
 }
 
-/* Tabs */
-.nav-tabs .nav-link {
-    font-weight: 500;
+.alert {
+    border-radius: 0.95rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    background: #ffffff;
+    color: var(--ink);
 }
 
-.nav-tabs .nav-link.active {
-    color: var(--primary-color);
-}
-
-/* Shared calculator layout */
-.calculator-content {
+.glass-footer {
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     position: relative;
+    z-index: 1;
+    color: var(--muted);
 }
 
-.calculator-section-title {
-    font-weight: 600;
-    color: var(--primary-color);
+#calculator-tab-content > .tab-pane {
+    animation: fadeSlide 0.35s ease;
 }
 
-.calculator-summary {
-    display: grid;
-    gap: 1rem;
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.calculator-summary .summary-item {
-    height: 100%;
-}
-
-.calculator-graph {
-    position: relative;
-    height: 360px;
-}
-
-.calculator-graph canvas {
-    max-height: 100%;
+@media (max-width: 992px) {
+    .nav-tabs {
+        flex-wrap: wrap;
+    }
 }
 
 @media (max-width: 768px) {
-    .calculator-graph {
+    .calculator-graph,
+    #payoff-graph-container {
+        height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        font-size: 0.95rem;
+    }
+
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .nav-tabs .nav-link {
+        width: 100%;
+        text-align: left;
+    }
+
+    #payoff-graph-container {
         height: 280px;
     }
 }
 
-/* Income tax summary */
-.summary-item {
-    display: flex;
-    flex-direction: column;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 0.5rem;
-    height: 100%;
-}
+@media (max-width: 360px) {
+    #payoff-graph-container {
+        height: 240px;
+    }
 
-.summary-item .label {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.summary-item .value {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.summary-item.highlight {
-    background: rgba(13, 110, 253, 0.1);
-    border: 1px solid rgba(13, 110, 253, 0.3);
-    box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.15);
+    .form-control {
+        font-size: 0.9rem;
+    }
 }

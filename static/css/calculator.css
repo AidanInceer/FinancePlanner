@@ -124,3 +124,72 @@ main {
 .loading-overlay.hidden {
     display: none;
 }
+
+/* Tabs */
+.nav-tabs .nav-link {
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+}
+
+/* Shared calculator layout */
+.calculator-content {
+    position: relative;
+}
+
+.calculator-section-title {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.calculator-summary {
+    display: grid;
+    gap: 1rem;
+}
+
+.calculator-summary .summary-item {
+    height: 100%;
+}
+
+.calculator-graph {
+    position: relative;
+    height: 360px;
+}
+
+.calculator-graph canvas {
+    max-height: 100%;
+}
+
+@media (max-width: 768px) {
+    .calculator-graph {
+        height: 280px;
+    }
+}
+
+/* Income tax summary */
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    height: 100%;
+}
+
+.summary-item .label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.summary-item .value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.summary-item.highlight {
+    background: rgba(13, 110, 253, 0.1);
+    border: 1px solid rgba(13, 110, 253, 0.3);
+    box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.15);
+}

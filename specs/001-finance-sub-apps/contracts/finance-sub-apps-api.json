@@ -1,0 +1,287 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Finance Sub-Apps API",
+    "version": "1.0.0",
+    "description": "JSON calculation endpoints for finance sub-apps."
+  },
+  "paths": {
+    "/api/rent-vs-buy/calculate": {
+      "post": {
+        "summary": "Calculate rent vs buy comparison",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RentVsBuyInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RentVsBuyResult" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/emergency-fund/calculate": {
+      "post": {
+        "summary": "Calculate emergency fund target and gap",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmergencyFundInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmergencyFundResult" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resilience-score/calculate": {
+      "post": {
+        "summary": "Calculate financial resilience score",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResilienceScoreInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResilienceScoreResult" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/time-to-freedom/calculate": {
+      "post": {
+        "summary": "Calculate freedom number and timeline",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TimeToFreedomInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TimeToFreedomResult" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["errors"]
+      },
+      "RentVsBuyInput": {
+        "type": "object",
+        "required": [
+          "property_price",
+          "deposit_amount",
+          "mortgage_rate",
+          "mortgage_term_years",
+          "monthly_rent",
+          "rent_growth_rate",
+          "home_appreciation_rate",
+          "maintenance_rate",
+          "investment_return_rate",
+          "analysis_years"
+        ],
+        "properties": {
+          "property_price": { "type": "number" },
+          "deposit_amount": { "type": "number" },
+          "mortgage_rate": { "type": "number" },
+          "mortgage_term_years": { "type": "integer" },
+          "monthly_rent": { "type": "number" },
+          "rent_growth_rate": { "type": "number" },
+          "home_appreciation_rate": { "type": "number" },
+          "maintenance_rate": { "type": "number" },
+          "property_tax_rate": { "type": "number" },
+          "insurance_annual": { "type": "number" },
+          "buying_costs": { "type": "number" },
+          "selling_costs": { "type": "number" },
+          "investment_return_rate": { "type": "number" },
+          "analysis_years": { "type": "integer" }
+        }
+      },
+      "RentVsBuyResult": {
+        "type": "object",
+        "required": [
+          "total_cost_rent",
+          "total_cost_buy",
+          "net_worth_rent",
+          "net_worth_buy",
+          "summary",
+          "graph_series"
+        ],
+        "properties": {
+          "total_cost_rent": { "type": "number" },
+          "total_cost_buy": { "type": "number" },
+          "net_worth_rent": { "type": "number" },
+          "net_worth_buy": { "type": "number" },
+          "break_even_year": { "type": "integer", "nullable": true },
+          "summary": { "type": "string" },
+          "graph_series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": { "type": "integer" },
+                "rent_value": { "type": "number" },
+                "buy_value": { "type": "number" }
+              },
+              "required": ["year", "rent_value", "buy_value"]
+            }
+          }
+        }
+      },
+      "EmergencyFundInput": {
+        "type": "object",
+        "required": ["monthly_expenses", "target_months"],
+        "properties": {
+          "monthly_expenses": { "type": "number" },
+          "target_months": { "type": "integer" },
+          "current_savings": { "type": "number" }
+        }
+      },
+      "EmergencyFundResult": {
+        "type": "object",
+        "required": ["target_fund", "savings_gap"],
+        "properties": {
+          "target_fund": { "type": "number" },
+          "savings_gap": { "type": "number" },
+          "coverage_months": { "type": "number" }
+        }
+      },
+      "ResilienceScoreInput": {
+        "type": "object",
+        "required": ["savings", "income_stability", "debt_load", "insurance_coverage"],
+        "properties": {
+          "savings": { "type": "number" },
+          "income_stability": { "type": "integer" },
+          "debt_load": { "type": "number" },
+          "insurance_coverage": { "type": "integer" }
+        }
+      },
+      "ResilienceScoreResult": {
+        "type": "object",
+        "required": ["resilience_index", "weak_points", "summary"],
+        "properties": {
+          "resilience_index": { "type": "integer" },
+          "weak_points": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "summary": { "type": "string" }
+        }
+      },
+      "TimeToFreedomInput": {
+        "type": "object",
+        "required": [
+          "annual_expenses",
+          "current_investments",
+          "annual_contribution",
+          "investment_return_rate",
+          "safe_withdrawal_rate"
+        ],
+        "properties": {
+          "annual_expenses": { "type": "number" },
+          "current_investments": { "type": "number" },
+          "annual_contribution": { "type": "number" },
+          "investment_return_rate": { "type": "number" },
+          "safe_withdrawal_rate": { "type": "number" }
+        }
+      },
+      "TimeToFreedomResult": {
+        "type": "object",
+        "required": ["freedom_number", "years_to_freedom", "timeline_series", "summary"],
+        "properties": {
+          "freedom_number": { "type": "number" },
+          "years_to_freedom": { "type": "integer", "nullable": true },
+          "timeline_series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": { "type": "integer" },
+                "portfolio_value": { "type": "number" }
+              },
+              "required": ["year", "portfolio_value"]
+            }
+          },
+          "summary": { "type": "string" }
+        }
+      }
+    }
+  }
+}

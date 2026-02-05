@@ -4,16 +4,33 @@ from decimal import Decimal
 
 import pytest
 
-from calculator.models import CalculatorInput, ScenarioType
+from calculator.models import (
+    CalculatorInput,
+    EmergencyFundInput,
+    RentVsBuyInput,
+    ResilienceScoreInput,
+    ScenarioType,
+    TaxCalculationInput,
+    TimeToFreedomInput,
+)
 from calculator.services import (
     apply_uk_tax_rules,
+    calculate_emergency_fund,
+    calculate_income_tax_result,
     calculate_investment_value,
     calculate_loan_balance,
     calculate_payoff_scenarios,
+    calculate_rent_vs_buy,
+    calculate_resilience_score,
+    calculate_time_to_freedom,
     generate_recommendation,
     load_uk_tax_config,
     project_scenario,
     serialize_calculation_result,
+    serialize_emergency_fund_result,
+    serialize_rent_vs_buy_result,
+    serialize_resilience_score_result,
+    serialize_time_to_freedom_result,
 )
 
 
@@ -138,6 +155,93 @@ class TestApplyUKTaxRules:
         assert repayment <= Decimal("1000")
 
 
+class TestRentVsBuyService:
+    """Tests for rent vs buy calculation service."""
+
+    def test_rent_vs_buy_returns_series(self):
+        calc_input = RentVsBuyInput(
+            property_price=Decimal("300000"),
+            deposit_amount=Decimal("60000"),
+            mortgage_rate=Decimal("0.05"),
+            mortgage_term_years=25,
+            monthly_rent=Decimal("1400"),
+            rent_growth_rate=Decimal("0.03"),
+            home_appreciation_rate=Decimal("0.03"),
+            maintenance_rate=Decimal("0.01"),
+            property_tax_rate=Decimal("0.005"),
+            insurance_annual=Decimal("350"),
+            buying_costs=Decimal("5000"),
+            selling_costs=Decimal("6000"),
+            investment_return_rate=Decimal("0.05"),
+            analysis_years=10,
+        )
+
+        result = calculate_rent_vs_buy(calc_input)
+        assert len(result.graph_series) == 10
+        assert result.summary
+
+        serialized = serialize_rent_vs_buy_result(result)
+        assert "graph_series" in serialized
+
+
+class TestEmergencyFundService:
+    """Tests for emergency fund calculation service."""
+
+    def test_emergency_fund_gap(self):
+        calc_input = EmergencyFundInput(
+            monthly_expenses=Decimal("2000"),
+            target_months=6,
+            current_savings=Decimal("3000"),
+        )
+
+        result = calculate_emergency_fund(calc_input)
+        assert result.target_fund == Decimal("12000")
+        assert result.savings_gap == Decimal("9000")
+        assert result.coverage_months is not None
+
+        serialized = serialize_emergency_fund_result(result)
+        assert serialized["target_fund"] == 12000.0
+
+
+class TestResilienceScoreService:
+    """Tests for resilience score calculation service."""
+
+    def test_resilience_score_outputs(self):
+        calc_input = ResilienceScoreInput(
+            savings=Decimal("8000"),
+            income_stability=70,
+            debt_load=Decimal("4000"),
+            insurance_coverage=65,
+        )
+
+        result = calculate_resilience_score(calc_input)
+        assert 0 <= result.resilience_index <= 100
+        assert isinstance(result.weak_points, list)
+
+        serialized = serialize_resilience_score_result(result)
+        assert "resilience_index" in serialized
+
+
+class TestTimeToFreedomService:
+    """Tests for time-to-freedom calculation service."""
+
+    def test_time_to_freedom_result(self):
+        calc_input = TimeToFreedomInput(
+            annual_expenses=Decimal("28000"),
+            current_investments=Decimal("25000"),
+            annual_contribution=Decimal("8000"),
+            investment_return_rate=Decimal("0.05"),
+            safe_withdrawal_rate=Decimal("0.04"),
+        )
+
+        result = calculate_time_to_freedom(calc_input)
+        assert result.freedom_number > 0
+        assert len(result.timeline_series) > 0
+
+        serialized = serialize_time_to_freedom_result(result)
+        assert "timeline_series" in serialized
+
+
 class TestProjectScenario:
     """Tests for project_scenario function."""
 
@@ -173,7 +277,10 @@ class TestProjectScenario:
 
     def test_pessimistic_scenario(self):
         """Test pessimistic scenario projection."""
-        projection = project_scenario(self.calc_input, ScenarioType.PESSIMISTIC)
+        projection = project_scenario(
+            self.calc_input,
+            ScenarioType.PESSIMISTIC,
+        )
 
         assert projection.scenario_type == ScenarioType.PESSIMISTIC
         assert projection.investment_growth_rate == Decimal("4.0")
@@ -227,10 +334,17 @@ class TestGenerateRecommendation:
     def test_recommendation_structure(self):
         """Test recommendation has required fields."""
         optimistic = project_scenario(self.calc_input, ScenarioType.OPTIMISTIC)
-        pessimistic = project_scenario(self.calc_input, ScenarioType.PESSIMISTIC)
+        pessimistic = project_scenario(
+            self.calc_input,
+            ScenarioType.PESSIMISTIC,
+        )
         realistic = project_scenario(self.calc_input, ScenarioType.REALISTIC)
 
-        recommendation = generate_recommendation(optimistic, pessimistic, realistic)
+        recommendation = generate_recommendation(
+            optimistic,
+            pessimistic,
+            realistic,
+        )
 
         assert hasattr(recommendation, "decision")
         assert hasattr(recommendation, "confidence")
@@ -240,20 +354,38 @@ class TestGenerateRecommendation:
     def test_recommendation_decision_valid(self):
         """Test recommendation decision is one of valid options."""
         optimistic = project_scenario(self.calc_input, ScenarioType.OPTIMISTIC)
-        pessimistic = project_scenario(self.calc_input, ScenarioType.PESSIMISTIC)
+        pessimistic = project_scenario(
+            self.calc_input,
+            ScenarioType.PESSIMISTIC,
+        )
         realistic = project_scenario(self.calc_input, ScenarioType.REALISTIC)
 
-        recommendation = generate_recommendation(optimistic, pessimistic, realistic)
+        recommendation = generate_recommendation(
+            optimistic,
+            pessimistic,
+            realistic,
+        )
 
-        assert recommendation.decision in ["invest", "pay_off_early", "neutral"]
+        assert recommendation.decision in [
+            "invest",
+            "pay_off_early",
+            "neutral",
+        ]
 
     def test_recommendation_confidence_valid(self):
         """Test recommendation confidence is one of valid options."""
         optimistic = project_scenario(self.calc_input, ScenarioType.OPTIMISTIC)
-        pessimistic = project_scenario(self.calc_input, ScenarioType.PESSIMISTIC)
+        pessimistic = project_scenario(
+            self.calc_input,
+            ScenarioType.PESSIMISTIC,
+        )
         realistic = project_scenario(self.calc_input, ScenarioType.REALISTIC)
 
-        recommendation = generate_recommendation(optimistic, pessimistic, realistic)
+        recommendation = generate_recommendation(
+            optimistic,
+            pessimistic,
+            realistic,
+        )
 
         assert recommendation.confidence in ["high", "medium", "low"]
 
@@ -377,3 +509,77 @@ class TestSerializeCalculationResult:
         json_str = json.dumps(serialized)
         assert isinstance(json_str, str)
         assert len(json_str) > 0
+
+
+class TestIncomeTaxCalculations:
+    """Tests for UK income tax calculation helpers."""
+
+    def build_input(self, **overrides):
+        data = {
+            "gross_income": Decimal("45000"),
+            "bonus_annual": Decimal("0"),
+            "pay_frequency": "annual",
+            "tax_jurisdiction": "england_wales_ni",
+            "ni_category": "A",
+            "student_loan_plan": "none",
+            "pension_contribution_type": "none",
+            "pension_contribution_value": Decimal("0"),
+            "other_pretax_deductions": Decimal("0"),
+            "tax_year": "2025-26",
+        }
+        data.update(overrides)
+        return TaxCalculationInput(**data)
+
+    def test_income_below_personal_allowance(self):
+        calc_input = self.build_input(gross_income=Decimal("10000"))
+        result = calculate_income_tax_result(calc_input)
+
+        assert result.deductions.income_tax_total == Decimal("0")
+        assert result.deductions.ni_total == Decimal("0")
+        assert result.deductions.student_loan_total == Decimal("0")
+        assert result.net_pay.net_annual == Decimal("10000")
+
+    def test_basic_rate_boundary(self):
+        calc_input = self.build_input(gross_income=Decimal("50270"))
+        result = calculate_income_tax_result(calc_input)
+
+        expected_tax = Decimal("37700") * Decimal("0.2")
+        assert result.deductions.income_tax_total == expected_tax
+
+    def test_personal_allowance_taper(self):
+        calc_input = self.build_input(gross_income=Decimal("110000"))
+        result = calculate_income_tax_result(calc_input)
+
+        expected_allowance = Decimal("12570") - Decimal("5000")
+        expected_taxable = Decimal("110000") - expected_allowance
+        assert result.deductions.taxable_income == expected_taxable
+
+    def test_student_loan_threshold(self):
+        calc_input = self.build_input(
+            gross_income=Decimal("20000"),
+            student_loan_plan="plan_2",
+        )
+        result = calculate_income_tax_result(calc_input)
+
+        assert result.deductions.student_loan_total == Decimal("0")
+
+    def test_ni_category_exempt(self):
+        calc_input = self.build_input(
+            gross_income=Decimal("60000"),
+            ni_category="C",
+        )
+        result = calculate_income_tax_result(calc_input)
+
+        assert result.deductions.ni_total == Decimal("0")
+
+    def test_pension_contribution_reduces_taxable_income(self):
+        calc_input = self.build_input(
+            gross_income=Decimal("50000"),
+            pension_contribution_type="percentage",
+            pension_contribution_value=Decimal("10"),
+        )
+        result = calculate_income_tax_result(calc_input)
+
+        expected_taxable = Decimal("50000") - (Decimal("50000") * Decimal("0.10"))
+        expected_taxable -= Decimal("12570")
+        assert result.deductions.taxable_income == expected_taxable

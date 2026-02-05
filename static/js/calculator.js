@@ -1,7 +1,54 @@
 // Student Loan Payoff Calculator JavaScript
 
-// Global chart instance
+// Global chart instances
 let payoffChart = null;
+let rentVsBuyChart = null;
+let freedomChart = null;
+
+const currencyFormatter = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    maximumFractionDigits: 0,
+});
+
+function formatCurrency(value) {
+    return currencyFormatter.format(Number(value) || 0);
+}
+
+function formatPercent(value, decimals = 1) {
+    return `${Number(value).toFixed(decimals)}%`;
+}
+
+function showFormError(elementId, message) {
+    const target = document.getElementById(elementId);
+    if (!target) return;
+    target.textContent = message;
+    target.classList.remove('d-none');
+}
+
+function clearFormError(elementId) {
+    const target = document.getElementById(elementId);
+    if (!target) return;
+    target.textContent = '';
+    target.classList.add('d-none');
+}
+
+async function postJson(url, payload) {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        const errors = data.errors ? data.errors.join(', ') : 'Unable to calculate.';
+        throw new Error(errors);
+    }
+    return data;
+}
 
 /**
  * Initialize the calculator when DOM is loaded
@@ -17,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const form = document.getElementById('calculator-form');
     if (form) {
-        form.addEventListener('submit', handleFormSubmit);
+        form.addEventListener('submit', handleLoanFormSubmit);
 
         // Add real-time validation
         const inputs = form.querySelectorAll('input[type="number"]');
@@ -37,7 +84,56 @@ document.addEventListener('DOMContentLoaded', function() {
             incomeInput.addEventListener('blur', calculateAnnualRepayment);
         }
     }
+
+    const taxForm = document.getElementById('income-tax-form');
+    if (taxForm) {
+        taxForm.addEventListener('submit', handleIncomeTaxSubmit);
+
+        const pensionTypeSelect = document.getElementById('pension_contribution_type');
+        if (pensionTypeSelect) {
+            pensionTypeSelect.addEventListener('change', updatePensionSuffix);
+            updatePensionSuffix();
+        }
+    }
+
+    const rentVsBuyForm = document.getElementById('rent-vs-buy-form');
+    if (rentVsBuyForm) {
+        rentVsBuyForm.addEventListener('submit', handleRentVsBuySubmit);
+    }
+
+    const emergencyFundForm = document.getElementById('emergency-fund-form');
+    if (emergencyFundForm) {
+        emergencyFundForm.addEventListener('submit', handleEmergencyFundSubmit);
+    }
+
+    const resilienceForm = document.getElementById('resilience-form');
+    if (resilienceForm) {
+        resilienceForm.addEventListener('submit', handleResilienceSubmit);
+    }
+
+    const freedomForm = document.getElementById('freedom-form');
+    if (freedomForm) {
+        freedomForm.addEventListener('submit', handleFreedomSubmit);
+    }
 });
+
+function updatePensionSuffix() {
+    const pensionType = document.getElementById('pension_contribution_type');
+    const pensionSuffix = document.getElementById('pension-value-suffix');
+    const pensionValue = document.getElementById('pension_contribution_value');
+
+    if (!pensionType || !pensionSuffix || !pensionValue) return;
+
+    if (pensionType.value === 'percentage') {
+        pensionSuffix.textContent = '%';
+        pensionValue.step = '0.1';
+        pensionValue.max = '100';
+    } else {
+        pensionSuffix.textContent = '£';
+        pensionValue.step = '0.01';
+        pensionValue.removeAttribute('max');
+    }
+}
 
 /**
  * Calculate annual loan repayment based on UK Plan 2 rules
@@ -141,7 +237,7 @@ function validateLoanInterestRange() {
 /**
  * Handle form submission
  */
-async function handleFormSubmit(event) {
+async function handleLoanFormSubmit(event) {
     event.preventDefault();
 
     // Validate all fields
@@ -165,7 +261,7 @@ async function handleFormSubmit(event) {
     }
 
     if (!allValid) {
-        showError('Please correct the errors in the form');
+        showLoanError('Please correct the errors in the form');
         return;
     }
 
@@ -191,7 +287,7 @@ async function handleFormSubmit(event) {
 
     // Show loading
     showLoading();
-    hideError();
+    hideLoanError();
 
     try {
         // Call API
@@ -215,7 +311,102 @@ async function handleFormSubmit(event) {
         displayResults(result);
 
     } catch (error) {
-        showError(error.message || 'An error occurred during calculation');
+        showLoanError(error.message || 'An error occurred during calculation');
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Handle income tax form submission
+ */
+async function handleIncomeTaxSubmit(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    let allValid = true;
+
+    const numberInputs = form.querySelectorAll('input[type="number"]');
+    numberInputs.forEach(input => {
+        if (input.value !== '') {
+            if (!validateField.call(input)) {
+                allValid = false;
+            }
+        } else if (input.required) {
+            input.classList.add('is-invalid');
+            allValid = false;
+        }
+    });
+
+    const requiredSelects = form.querySelectorAll('select[required]');
+    requiredSelects.forEach(select => {
+        if (!select.value) {
+            select.classList.add('is-invalid');
+            allValid = false;
+        } else {
+            select.classList.remove('is-invalid');
+        }
+    });
+
+    const pensionType = document.getElementById('pension_contribution_type').value;
+    const pensionValueInput = document.getElementById('pension_contribution_value');
+    if (pensionType !== 'none') {
+        const pensionValue = parseFloat(pensionValueInput.value) || 0;
+        if (pensionValue < 0 || (pensionType === 'percentage' && pensionValue > 100)) {
+            pensionValueInput.classList.add('is-invalid');
+            allValid = false;
+        } else {
+            pensionValueInput.classList.remove('is-invalid');
+        }
+    } else {
+        pensionValueInput.classList.remove('is-invalid');
+    }
+
+    if (!allValid) {
+        showTaxError('Please correct the errors in the form');
+        return;
+    }
+
+    const formData = {
+        gross_income: parseFloat(document.getElementById('tax_gross_income').value),
+        bonus_annual: parseFloat(document.getElementById('bonus_annual').value) || 0,
+        pay_frequency: document.getElementById('tax_pay_frequency').value,
+        tax_jurisdiction: document.getElementById('tax_jurisdiction').value,
+        ni_category: document.getElementById('ni_category').value,
+        student_loan_plan: document.getElementById('student_loan_plan').value,
+        pension_contribution_type: pensionType,
+        pension_contribution_value: parseFloat(
+            document.getElementById('pension_contribution_value').value
+        ) || 0,
+        other_pretax_deductions: parseFloat(
+            document.getElementById('other_pretax_deductions').value
+        ) || 0,
+        tax_year: document.getElementById('tax_year').value
+    };
+
+    showLoading();
+    hideTaxError();
+
+    try {
+        const response = await fetch('/api/income-tax/calculate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.errors ? errorData.errors.join(', ') : 'Calculation failed');
+        }
+
+        const result = await response.json();
+        displayIncomeTaxResults(result);
+
+    } catch (error) {
+        showTaxError(error.message || 'An error occurred during calculation');
     } finally {
         hideLoading();
     }
@@ -300,7 +491,7 @@ function getDecisionTitle(decision) {
 function showLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
-        overlay.classList.remove('hidden');
+        overlay.classList.remove('d-none');
     }
 }
 
@@ -310,26 +501,38 @@ function showLoading() {
 function hideLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
-        overlay.classList.add('hidden');
+        overlay.classList.add('d-none');
     }
 }
 
 /**
  * Display error message
  */
-function showError(message) {
-    const errorDiv = document.getElementById('form-errors');
+function showLoanError(message) {
+    const errorDiv = document.getElementById('loan-form-errors');
     if (errorDiv) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('d-none');
     }
 }
 
-/**
- * Hide error message
- */
-function hideError() {
-    const errorDiv = document.getElementById('form-errors');
+function hideLoanError() {
+    const errorDiv = document.getElementById('loan-form-errors');
+    if (errorDiv) {
+        errorDiv.classList.add('d-none');
+    }
+}
+
+function showTaxError(message) {
+    const errorDiv = document.getElementById('tax-form-errors');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('d-none');
+    }
+}
+
+function hideTaxError() {
+    const errorDiv = document.getElementById('tax-form-errors');
     if (errorDiv) {
         errorDiv.classList.add('d-none');
     }
@@ -539,54 +742,72 @@ function renderPayoffGraph(data) {
 }
 
 /**
+ * Display income tax calculation results
+ */
+function displayIncomeTaxResults(data) {
+    const resultsSection = document.getElementById('tax-results-section');
+    resultsSection.classList.remove('d-none');
+
+    const currencyFormatter = new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        maximumFractionDigits: 2
+    });
+
+    document.getElementById('tax-summary-year').textContent = data.tax_year;
+    document.getElementById('summary-gross').textContent = currencyFormatter.format(data.gross_annual);
+    document.getElementById('summary-taxable').textContent = currencyFormatter.format(data.taxable_annual);
+    document.getElementById('summary-total-deductions').textContent = currencyFormatter.format(
+        data.total_deductions_annual
+    );
+    document.getElementById('summary-income-tax').textContent = currencyFormatter.format(data.income_tax_annual);
+    document.getElementById('summary-ni').textContent = currencyFormatter.format(data.ni_annual);
+    document.getElementById('summary-student-loan').textContent = currencyFormatter.format(
+        data.student_loan_annual
+    );
+    document.getElementById('summary-net-annual').textContent = currencyFormatter.format(data.net_annual);
+    document.getElementById('summary-net-monthly').textContent = currencyFormatter.format(data.net_monthly);
+    document.getElementById('summary-net-weekly').textContent = currencyFormatter.format(data.net_weekly);
+    document.getElementById('summary-effective-rate').textContent = `${
+        (data.effective_deduction_rate * 100).toFixed(2)
+    }%`;
+
+    const incomeTaxBody = document.getElementById('income-tax-breakdown');
+    incomeTaxBody.innerHTML = '';
+    data.income_tax_bands.forEach(band => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${band.band_name}</td>
+            <td>${(band.rate * 100).toFixed(2)}%</td>
+            <td>${currencyFormatter.format(band.taxable_amount)}</td>
+            <td>${currencyFormatter.format(band.amount)}</td>
+        `;
+        incomeTaxBody.appendChild(row);
+    });
+
+    const niBody = document.getElementById('ni-breakdown');
+    niBody.innerHTML = '';
+    data.ni_bands.forEach(band => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${band.band_name}</td>
+            <td>${(band.rate * 100).toFixed(2)}%</td>
+            <td>${currencyFormatter.format(band.taxable_amount)}</td>
+            <td>${currencyFormatter.format(band.amount)}</td>
+        `;
+        niBody.appendChild(row);
+    });
+
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
  * Add crossover year annotation to graph (future enhancement)
  */
 function addCrossoverAnnotation(crossoverYear) {
     // This would require Chart.js annotation plugin
     // For MVP, we display crossover in the recommendation card
     console.log('Crossover year:', crossoverYear);
-}
-
-/**
- * Show loading overlay
- */
-function showLoading() {
-    const overlay = document.getElementById('loading-overlay');
-    if (overlay) {
-        overlay.classList.remove('d-none');
-    }
-}
-
-/**
- * Hide loading overlay
- */
-function hideLoading() {
-    const overlay = document.getElementById('loading-overlay');
-    if (overlay) {
-        overlay.classList.add('d-none');
-    }
-}
-
-/**
- * Show error message
- */
-function showError(message) {
-    const errorDiv = document.getElementById('error-message');
-    if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('d-none');
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-}
-
-/**
- * Hide error message
- */
-function hideError() {
-    const errorDiv = document.getElementById('error-message');
-    if (errorDiv) {
-        errorDiv.classList.add('d-none');
-    }
 }
 
 /**
@@ -605,4 +826,314 @@ function getCsrfToken() {
     // Fall back to meta tag
     const metaTag = document.querySelector('meta[name="csrf-token"]');
     return metaTag ? metaTag.getAttribute('content') : '';
+}
+
+async function handleRentVsBuySubmit(event) {
+    event.preventDefault();
+    clearFormError('rent-vs-buy-errors');
+
+    const form = event.target;
+    const inputs = form.querySelectorAll('input[type="number"]');
+    let allValid = true;
+    inputs.forEach(input => {
+        if (!validateField.call(input)) {
+            allValid = false;
+        }
+    });
+
+    if (!allValid) {
+        showFormError('rent-vs-buy-errors', 'Please correct the errors in the form');
+        return;
+    }
+
+    const payload = {
+        property_price: parseFloat(document.getElementById('rvb_property_price').value),
+        deposit_amount: parseFloat(document.getElementById('rvb_deposit_amount').value),
+        mortgage_rate: parseFloat(document.getElementById('rvb_mortgage_rate').value) / 100,
+        mortgage_term_years: parseInt(document.getElementById('rvb_mortgage_term').value),
+        monthly_rent: parseFloat(document.getElementById('rvb_monthly_rent').value),
+        rent_growth_rate: parseFloat(document.getElementById('rvb_rent_growth').value) / 100,
+        home_appreciation_rate: parseFloat(document.getElementById('rvb_home_growth').value) / 100,
+        maintenance_rate: parseFloat(document.getElementById('rvb_maintenance_rate').value) / 100,
+        property_tax_rate: parseFloat(document.getElementById('rvb_property_tax_rate').value) / 100,
+        insurance_annual: parseFloat(document.getElementById('rvb_insurance_annual').value),
+        buying_costs: parseFloat(document.getElementById('rvb_buying_costs').value),
+        selling_costs: parseFloat(document.getElementById('rvb_selling_costs').value),
+        investment_return_rate: parseFloat(document.getElementById('rvb_investment_return').value) / 100,
+        analysis_years: parseInt(document.getElementById('rvb_analysis_years').value),
+    };
+
+    showLoading();
+    try {
+        const data = await postJson('/api/rent-vs-buy/calculate', payload);
+        displayRentVsBuyResults(data);
+    } catch (error) {
+        showFormError('rent-vs-buy-errors', error.message || 'Unable to calculate rent vs buy.');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displayRentVsBuyResults(data) {
+    const section = document.getElementById('rent-vs-buy-results');
+    section.classList.remove('d-none');
+
+    document.getElementById('rvb-summary-text').textContent = data.summary;
+    document.getElementById('rvb-total-rent').textContent = formatCurrency(data.total_cost_rent);
+    document.getElementById('rvb-total-buy').textContent = formatCurrency(data.total_cost_buy);
+    document.getElementById('rvb-net-rent').textContent = formatCurrency(data.net_worth_rent);
+    document.getElementById('rvb-net-buy').textContent = formatCurrency(data.net_worth_buy);
+    document.getElementById('rvb-break-even').textContent =
+        data.break_even_year ? `${data.break_even_year} years` : 'Not within range';
+
+    renderRentVsBuyChart(data.graph_series);
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderRentVsBuyChart(series) {
+    const ctx = document.getElementById('rent-vs-buy-chart');
+    if (!ctx) return;
+
+    if (rentVsBuyChart) {
+        rentVsBuyChart.destroy();
+    }
+
+    const labels = series.map(point => `Year ${point.year}`);
+    const rentValues = series.map(point => point.rent_value);
+    const buyValues = series.map(point => point.buy_value);
+
+    rentVsBuyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Rent Net Worth',
+                    data: rentValues,
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Buy Net Worth',
+                    data: buyValues,
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return '£' + value.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+async function handleEmergencyFundSubmit(event) {
+    event.preventDefault();
+    clearFormError('emergency-fund-errors');
+
+    const form = event.target;
+    const inputs = form.querySelectorAll('input[type="number"]');
+    let allValid = true;
+    inputs.forEach(input => {
+        if (!validateField.call(input)) {
+            allValid = false;
+        }
+    });
+
+    if (!allValid) {
+        showFormError('emergency-fund-errors', 'Please correct the errors in the form');
+        return;
+    }
+
+    const payload = {
+        monthly_expenses: parseFloat(document.getElementById('ef_monthly_expenses').value),
+        target_months: parseInt(document.getElementById('ef_target_months').value),
+        current_savings: parseFloat(document.getElementById('ef_current_savings').value || 0)
+    };
+
+    showLoading();
+    try {
+        const data = await postJson('/api/emergency-fund/calculate', payload);
+        displayEmergencyFundResults(data);
+    } catch (error) {
+        showFormError('emergency-fund-errors', error.message || 'Unable to calculate emergency fund.');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displayEmergencyFundResults(data) {
+    const section = document.getElementById('emergency-fund-results');
+    section.classList.remove('d-none');
+
+    document.getElementById('ef-target-fund').textContent = formatCurrency(data.target_fund);
+    document.getElementById('ef-savings-gap').textContent = formatCurrency(data.savings_gap);
+    document.getElementById('ef-coverage').textContent =
+        data.coverage_months ? `${Number(data.coverage_months).toFixed(1)} months` : 'N/A';
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function handleResilienceSubmit(event) {
+    event.preventDefault();
+    clearFormError('resilience-errors');
+
+    const form = event.target;
+    const inputs = form.querySelectorAll('input[type="number"]');
+    let allValid = true;
+    inputs.forEach(input => {
+        if (!validateField.call(input)) {
+            allValid = false;
+        }
+    });
+
+    if (!allValid) {
+        showFormError('resilience-errors', 'Please correct the errors in the form');
+        return;
+    }
+
+    const payload = {
+        savings: parseFloat(document.getElementById('rs_savings').value),
+        income_stability: parseInt(document.getElementById('rs_income_stability').value),
+        debt_load: parseFloat(document.getElementById('rs_debt_load').value),
+        insurance_coverage: parseInt(document.getElementById('rs_insurance').value)
+    };
+
+    showLoading();
+    try {
+        const data = await postJson('/api/resilience-score/calculate', payload);
+        displayResilienceResults(data);
+    } catch (error) {
+        showFormError('resilience-errors', error.message || 'Unable to calculate resilience score.');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displayResilienceResults(data) {
+    const section = document.getElementById('resilience-results');
+    section.classList.remove('d-none');
+
+    document.getElementById('rs-index').textContent = `${data.resilience_index}/100`;
+    document.getElementById('rs-summary').textContent = data.summary;
+
+    const weakPoints = document.getElementById('rs-weak-points');
+    weakPoints.innerHTML = '';
+    if (data.weak_points.length === 0) {
+        weakPoints.innerHTML = '<li class="text-success">No weak points detected</li>';
+    } else {
+        data.weak_points.forEach(point => {
+            const li = document.createElement('li');
+            li.textContent = point;
+            weakPoints.appendChild(li);
+        });
+    }
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function handleFreedomSubmit(event) {
+    event.preventDefault();
+    clearFormError('freedom-errors');
+
+    const form = event.target;
+    const inputs = form.querySelectorAll('input[type="number"]');
+    let allValid = true;
+    inputs.forEach(input => {
+        if (!validateField.call(input)) {
+            allValid = false;
+        }
+    });
+
+    if (!allValid) {
+        showFormError('freedom-errors', 'Please correct the errors in the form');
+        return;
+    }
+
+    const payload = {
+        annual_expenses: parseFloat(document.getElementById('ff_annual_expenses').value),
+        current_investments: parseFloat(document.getElementById('ff_current_investments').value),
+        annual_contribution: parseFloat(document.getElementById('ff_annual_contribution').value),
+        investment_return_rate: parseFloat(document.getElementById('ff_return_rate').value) / 100,
+        safe_withdrawal_rate: parseFloat(document.getElementById('ff_withdrawal_rate').value) / 100
+    };
+
+    showLoading();
+    try {
+        const data = await postJson('/api/time-to-freedom/calculate', payload);
+        displayFreedomResults(data);
+    } catch (error) {
+        showFormError('freedom-errors', error.message || 'Unable to calculate time-to-freedom.');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displayFreedomResults(data) {
+    const section = document.getElementById('freedom-results');
+    section.classList.remove('d-none');
+
+    document.getElementById('ff-number').textContent = formatCurrency(data.freedom_number);
+    document.getElementById('ff-timeline').textContent =
+        data.years_to_freedom !== null ? `${data.years_to_freedom} years` : 'More than 60 years';
+    document.getElementById('ff-summary').textContent = data.summary;
+
+    renderFreedomChart(data.timeline_series);
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderFreedomChart(series) {
+    const ctx = document.getElementById('freedom-chart');
+    if (!ctx) return;
+
+    if (freedomChart) {
+        freedomChart.destroy();
+    }
+
+    const labels = series.map(point => `Year ${point.year}`);
+    const values = series.map(point => point.portfolio_value);
+
+    freedomChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Projected Portfolio',
+                    data: values,
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return '£' + value.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
